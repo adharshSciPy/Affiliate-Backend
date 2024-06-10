@@ -2,9 +2,9 @@ import express from "express"
 import { limiter } from "./utils/apiratelimitter.utils.js"
 
 //importing routes
-import adminRoute from "./routers/admin.route.js"
+import adminRoute from "./routers/admin.router.js"
 import userRoute from "./routers/user.router.js"
-import companyRoute from "./routers/company.route.js"
+import companyRoute from "./routers/company.router.js"
 
 const app = express()
 
