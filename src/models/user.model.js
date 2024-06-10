@@ -30,7 +30,6 @@ const userSchema = new Schema({
     phoneNumber: {
         type: Number,
         trim: true,
-        required: [true, "User's Phonenumber is required"]
     },
     password: {
         type: String,  
