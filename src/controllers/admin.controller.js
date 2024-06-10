@@ -42,4 +42,39 @@ const registerAdmin = async (req, res) => {
     }
 }
 
-export { registerAdmin }
+// @POST
+// admin/login
+// desc: Login api of admin with credentials
+const loginAdmin = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // sanitiasing inputs
+        const isEmptyFields = [email, password].some((field) => field?.trim() === "");
+        if (isEmptyFields) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        //finding admin and validating
+        const admin = await Admin.findOne({ email });
+        if (!admin) {
+            return res.status(404).json({ message: "Admin doesn't exist" });
+        }
+
+        // verify password 
+        const isPasswordCorrect = await admin.isPasswordCorrect(password);
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ message: 'Incorrect password' });
+        }
+
+        //generate access token
+        const accessToken = await admin.generateAccessToken();
+
+        return res.status(200).json({ message: 'Admin Validation Succesfull', token: accessToken })
+    }
+    catch (err) {
+        return res.status(500).json({ message: `Internal Server due to ${err.message}` });
+    }
+};
+
+export { registerAdmin, loginAdmin }
