@@ -42,6 +42,43 @@ const registerUser = async (req, res) => {
       .status(500)
       .json({ message: `Internal Server due to ${err.message}` });
   }
-};
+}
 
-export { registerUser };
+//@post
+// user/login
+// desc:Login api of admin with credentials
+
+const loginUser = async (req,res) =>{
+  const{email,password} = req.body;
+   
+  try {
+    //sanitiasing inputs
+    const isEmptyFields = [email,password].some((field) => field?.trim() ==="");
+    if(isEmptyFields){
+      return res.status(400).json({ message: 'All fields are required'});
+
+    }
+    //finding user and validating
+    const user = await User.findOne({email});
+    if(!user) {
+      return res.status(404).json({ message: "User doesn't exist" });
+
+    }
+    //verify password
+
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+    if(!isPasswordCorrect) {
+      return res.status(401).json ({ message: 'Incorrect password'});
+
+
+    }
+    //generate access token
+    const accessToken = await user.generateAccessToken();
+
+    return res.status(200).json({message: 'User validation Successful',token: accessToken})
+  } catch (err) {
+    return res.status(500).json({ message:  `Internal Server due to ${err.message}`});
+  }
+}
+
+export { registerUser, loginUser }
