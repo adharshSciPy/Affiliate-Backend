@@ -64,7 +64,7 @@ const loginCompany = async (req, res) => {
     //finding company and validation
     const company = await Company.findOne({ email });
     if (!company) {
-      return res.status(404).json({ message: "Admin doesn't exist" });
+      return res.status(404).json({ message: "Company doesn't exist" });
     }
     //verify password
     const isPasswordCorrect = await company.isPasswordCorrect(password);
@@ -76,7 +76,7 @@ const loginCompany = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "Admin Validation Succesfull", token: accessToken });
+      .json({ message: "Company Validation Succesfull", token: accessToken });
   } catch (err) {
     return res
       .status(500)
