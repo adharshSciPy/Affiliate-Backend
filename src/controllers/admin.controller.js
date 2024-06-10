@@ -3,7 +3,7 @@ import { passwordValidator } from "../utils/passwordValidator.util.js"
 
 // @POST
 // admin/register
-// desc: Creating super admin with all level of access to the system
+// desc: Creating admin with all level of access to the system
 const registerAdmin = async (req, res) => {
     const { fullName, lastName, email, password } = req.body
 

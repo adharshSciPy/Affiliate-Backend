@@ -3,7 +3,7 @@ import { passwordValidator } from "../utils/passwordValidator.util.js";
 
 // @POST
 // company/register
-// desc: Creating super company with all level of access to the system
+// desc: Creating company with all level of access to the system
 const registerCompany = async (req, res) => {
   const { companyName, email, password } = req.body;
 
@@ -31,7 +31,7 @@ const registerCompany = async (req, res) => {
       return res.status(409).json({ message: "Email is already in use" });
     }
 
-    //admin creation
+    //company creation
     const company = await Company.create({ companyName, email, password });
     const createdCompany = await Company.findOne({ _id: company._id }).select(
       "-password"
@@ -48,6 +48,7 @@ const registerCompany = async (req, res) => {
       .json({ message: `Internal Server due to ${err.message}` });
   }
 };
+
 // @POST
 // company/login
 // desc: Login api of company with credentials

@@ -1,6 +1,9 @@
 import { User } from "../models/user.model.js";
 import { passwordValidator } from "../utils/passwordValidator.util.js";
 
+// @POST
+// user/register
+// desc: Api for creating new admins
 const registerUser = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   try {
@@ -44,10 +47,9 @@ const registerUser = async (req, res) => {
   }
 }
 
-//@post
+//@POST
 // user/login
 // desc:Login api of admin with credentials
-
 const loginUser = async (req,res) =>{
   const{email,password} = req.body;
    
