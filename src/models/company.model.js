@@ -25,28 +25,28 @@ const companySchema = new Schema(
     phoneNumber: {
       type: Number,
       trim: true,
-      required: [true, "Admin's Phonenumber is required"],
+      
     },
     address: {
       type: String,
-      required: [true, "Address is required"],
+    
     },
     pincode: {
       type: Number,
       trim: true,
-      required: [true, "Pincode is required"],
+   
     },
     location: {
       type: String,
-      required: [true, "Location is required"],
+     
     },
     gstNumber: {
       type: String,
-      required: [true, "GSTIN Number is required"],
+     
     },
     licenseNumber: {
       type: String,
-      required: [true, "License Number is required"],
+    
     },
     rating: {
       type: Number,

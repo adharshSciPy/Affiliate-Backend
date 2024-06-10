@@ -45,7 +45,7 @@ const registerCompany = async (req, res) => {
 
     return res.status(201).json({ message: "Company Registration Successful" });
     
-  } catch (error) {
+  } catch (err) {
     return res
       .status(500)
       .json({ message: `Internal Server due to ${err.message}` });
