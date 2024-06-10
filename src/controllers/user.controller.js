@@ -1,5 +1,5 @@
-import { User } from "../models/user.model"
-import { passwordValidator } from "../utils/passwordValidator.util"
+import { User } from "../models/user.model.js"
+import { passwordValidator } from "../utils/passwordValidator.util.js"
 
 
 const registerUser = async (req, res) => {

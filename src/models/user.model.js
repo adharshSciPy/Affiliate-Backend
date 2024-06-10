@@ -82,4 +82,4 @@ userSchema.methods.isPasswordCorrect = async function (password) {
     next()
 }
 
-export const Admin = mongoose.model("User", userSchema)
+export const User = mongoose.model("User", userSchema)
