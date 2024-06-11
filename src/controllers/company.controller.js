@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Company } from "../models/company.model.js";
 import { passwordValidator } from "../utils/passwordValidator.util.js";
 
@@ -84,4 +85,48 @@ const loginCompany = async (req, res) => {
       .json({ message: `Internal Server due to ${err.message} ` });
   }
 };
-export { registerCompany, loginCompany };
+//PATCH
+//COMPANY/DETIALS
+// desc: Company Detials api of company
+const companyMoreDetials = async (req, res) => {
+  const {
+    companyName,
+    phoneNumber,
+    address,
+    pincode,
+    location,
+    gstNumber,
+    licenseNumber,
+  } = req.body;
+  const { companyId } = req.params;
+  try {
+    const company = await Company.findOne({ _id: companyId }).select(
+      "-password"
+    );
+    if (!company) {
+      return res
+        .status(404)
+        .json({ status: 404, message: "Company doesn't exist" });
+    }
+    company.companyName = companyName;
+    company.phoneNumber = phoneNumber;
+    company.address = address;
+    company.pincode = pincode;
+    company.location = location;
+    company.gstNumber = gstNumber;
+    company.licenseNumber = licenseNumber;
+
+    await company.save();
+
+    return res.status(200).json({
+      status: 200,
+      message: "Company detials updated successfully",
+      data: company,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message} ` });
+  }
+};
+export { registerCompany, loginCompany, companyMoreDetials };
