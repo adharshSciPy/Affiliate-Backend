@@ -38,8 +38,9 @@ const serviceSchema = new Schema({
     ratings:{
         type:String,
     },
-    CompanyId:{
-        type:String,
+    companyId:{
+        type:Schema.Types.ObjectId,
+        ref: 'Company',
         required: [true, 'companyId is required']
     }    
 },
