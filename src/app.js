@@ -5,6 +5,9 @@ import { limiter } from "./utils/apiratelimitter.utils.js"
 import adminRoute from "./routers/admin.router.js"
 import userRoute from "./routers/user.router.js"
 import companyRoute from "./routers/company.router.js"
+import serviceRoute from "./routers/service.router.js"
+import transactionRoute from "./routers/transaction.route.js"
+import payoutRoute from "./routers/payout.route.js"
 
 const app = express()
 
@@ -17,5 +20,8 @@ app.use(limiter)
 app.use('/api/v1/admin', adminRoute)
 app.use('/api/v1/user', userRoute)
 app.use('/api/v1/company',companyRoute)
+app.use('/api/v1/service',serviceRoute)
+app.use('/api/v1/transaction',transactionRoute)
+app.use('/api/v1/payout',payoutRoute)
 
 export { app }
