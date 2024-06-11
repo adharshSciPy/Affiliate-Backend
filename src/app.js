@@ -6,8 +6,8 @@ import adminRoute from "./routers/admin.router.js"
 import userRoute from "./routers/user.router.js"
 import companyRoute from "./routers/company.router.js"
 import serviceRoute from "./routers/service.router.js"
-import transactionRoute from "./routers/transaction.route.js"
-import payoutRoute from "./routers/payout.route.js"
+import transactionRoute from "./routers/transaction.router.js"
+import payoutRoute from "./routers/payout.router.js"
 
 const app = express()
 
