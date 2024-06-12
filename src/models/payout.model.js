@@ -4,13 +4,11 @@ const payoutSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "User id is required"],
+      ref: "User"
     },
     companyId: {
       type: Schema.Types.ObjectId,
-      ref: "Company",
-      required: [true, "Company id is required"],
+      ref: "Company"
     },
     amount: {
       type: Number,
