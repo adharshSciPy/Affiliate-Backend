@@ -59,4 +59,31 @@ const postService = async (req, res) => {
       .json({ message: `Internal Server due to ${err.message}` });
   }
 };
-export { postService };
+
+//delete a service controller
+
+const deleteService = async (req, res) => {
+  const { serviceId } = req.params;
+  //find serviceId
+
+  try {
+    const isServiceExist = await Service.findOne({ _id: serviceId });
+
+    if (!isServiceExist) {
+      return res.status(404).json({ message: "Service doesn't exist" });
+    }
+
+    //delete serviceId
+    const service = await Service.deleteOne({ _id: serviceId });
+    if (!service) {
+      return res.status(404).json({ message: "Service not fount" });
+    }
+    return res.status(200).json({ message: "Service deleted successfully" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message}` });
+  }
+};
+
+export { postService, deleteService };
