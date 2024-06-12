@@ -23,9 +23,7 @@ const adminSchema = new Schema(
       required: [true, "Admin's Email number is required"],
     },
     phoneNumber: {
-      type: String,
-      trim: true,
-      required: [true, "Admin's Phonenumber is required"],
+      type: Number,
     },
     password: {
       type: String,
