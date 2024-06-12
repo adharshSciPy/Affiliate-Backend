@@ -83,7 +83,6 @@ const savePayout = async (req, res) => {
       amount,
       paymentMode,
     });
-    console.log("payoutid",payout);
     const createdPayout = await Payout.findOne({ _id: payout._id });
     if (!createdPayout) {
       return res.status(500).json({ message: "Payment is failed " });
