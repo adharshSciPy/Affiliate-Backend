@@ -5,11 +5,11 @@ import { passwordValidator } from "../utils/passwordValidator.util.js"
 // admin/register
 // desc: Creating admin with all level of access to the system
 const registerAdmin = async (req, res) => {
-    const { fullName, lastName, email, password } = req.body
+    const { firstName, lastName, email, password } = req.body
 
     try {
         // sanitiasing inputs
-        const isEmptyFields = [fullName, lastName, email, password].some((field) => field?.trim() === "")
+        const isEmptyFields = [firstName, lastName, email, password].some((field) => field?.trim() === "")
         if (isEmptyFields) {
             return res.status(401).json({ message: "All fields are required", })
         }
@@ -27,7 +27,7 @@ const registerAdmin = async (req, res) => {
         }
 
         //admin creation
-        const admin = await Admin.create({ fullName, lastName, email, password });
+        const admin = await Admin.create({ firstName, lastName, email, password });
         const createdAdmin = await Admin.findOne({ _id: admin._id }).select('-password');
 
         if (!createdAdmin) {
