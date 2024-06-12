@@ -104,9 +104,7 @@ const companyMoreDetials = async (req, res) => {
       "-password"
     );
     if (!company) {
-      return res
-        .status(404)
-        .json({ status: 404, message: "Company doesn't exist" });
+      return res.status(404).json({ message: "Company doesn't exist" });
     }
     company.companyName = companyName;
     company.phoneNumber = phoneNumber;
@@ -119,7 +117,6 @@ const companyMoreDetials = async (req, res) => {
     await company.save();
 
     return res.status(200).json({
-      status: 200,
       message: "Company detials updated successfully",
       data: company,
     });
@@ -129,4 +126,29 @@ const companyMoreDetials = async (req, res) => {
       .json({ message: `Internal Server due to ${err.message} ` });
   }
 };
-export { registerCompany, loginCompany, companyMoreDetials };
+//DELETE
+//COMPANY DETIALS/DELETE
+//desc: Company Detials delete api of company
+const deleteCompany = async (req, res) => {
+  const { companyId } = req.params;
+  try {
+    const isCompanyExist = await Company.findOne({ _id: companyId });
+    if (!isCompanyExist) {
+      return res.status(404).json({ message: "Company doesn't exist" });
+    }
+    const company = await Company.deleteOne({ _id: companyId });
+    if (!company) {
+      return res.status(404).json({ message: "Company deletion failed" });
+    }
+    return res.status(200).json({
+      message: "Company detials deleted successfully",
+      data: company,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message} ` });
+  }
+};
+
+export { registerCompany, loginCompany, companyMoreDetials, deleteCompany };
