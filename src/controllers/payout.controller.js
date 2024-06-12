@@ -7,7 +7,7 @@ import { User } from "../models/user.model.js";
 
 const createPayout = async (req, res) => {
   const { companyId, adminId } = req.params;
-  const { amount, paymentMode, status, userId } = req.body;
+  const { amount, paymentMode, status } = req.body;
 
   try {
     // sanitiasing inputs
@@ -16,7 +16,7 @@ const createPayout = async (req, res) => {
         .status(401)
         .json({ message: "Company Id or admin Id missing" });
     }
-    const isEmptyFields = [amount, paymentMode, status, userId, adminId].some(
+    const isEmptyFields = [amount, paymentMode, status, adminId].some(
       (field) => field === ""
     );
     if (isEmptyFields) {
@@ -32,7 +32,6 @@ const createPayout = async (req, res) => {
 
     const payout = await Payout.create({
       adminId,
-      userId,
       companyId,
       amount,
       paymentMode,
@@ -54,8 +53,7 @@ const createPayout = async (req, res) => {
 
 const savePayout = async (req, res) => {
   const { userId, adminId } = req.params;
-  console.log("id", userId, adminId);
-  const { amount, paymentMode, status, companyId } = req.body;
+  const { amount, paymentMode, status } = req.body;
 
   try {
     // sanitiasing inputs
@@ -66,7 +64,6 @@ const savePayout = async (req, res) => {
       amount,
       paymentMode,
       status,
-      companyId,
       adminId,
     ].some((field) => field === "");
     if (isEmptyFields) {
@@ -83,7 +80,6 @@ const savePayout = async (req, res) => {
     const payout = await Payout.create({
       adminId,
       userId,
-      companyId,
       amount,
       paymentMode,
     });
