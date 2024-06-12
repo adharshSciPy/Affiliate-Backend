@@ -57,7 +57,7 @@ const savePayout = async (req, res) => {
 
   try {
     // sanitiasing inputs
-    if (!userId) {
+    if (!userId||!adminId) {
       return res.status(401).json({ message: "user Id or admin Id missing" });
     }
     const isEmptyFields = [
