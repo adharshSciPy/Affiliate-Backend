@@ -1,5 +1,5 @@
 import express from "express"
-import { limiter } from "./utils/apiratelimitter.utils.js"
+import { limiter } from "./utils/api.util.js"
 
 //importing routes
 import adminRoute from "./routers/admin.router.js"

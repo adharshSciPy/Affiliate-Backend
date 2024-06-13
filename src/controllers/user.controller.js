@@ -47,7 +47,7 @@ const registerUser = async (req, res) => {
   }
 }
 
-//@POST
+// @POST
 // user/login
 // desc:Login api of admin with credentials
 const loginUser = async (req, res) => {
@@ -83,7 +83,7 @@ const loginUser = async (req, res) => {
   }
 }
 
-//@GET
+// @GET
 // user/customers
 // desc: Paginated api for getting all users with role customer
 const getAllCustomers = async (req, res) => {
