@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-
+ 
 const transactionSchema = new Schema({
   transactionId: {
     type: String,
@@ -14,25 +14,18 @@ orderId:{
     type: Schema.Types.ObjectId,
     ref: 'Order',
     required: [true, "orderId is required"],
-
 },
 grandTotal:{
     type:Number,
     required: [true, "GrandTotal is required"],
-
-
-
 },
 tax:{
     type:Number,
     required: [true, "Tax is required"],
-
 },
 paymentMode:{
     type:String,
-    required: [true, "PaymentMode is required"],
-
-    
+    required: [true, "PaymentMode is required"],   
 },
 status:{
     type:String,
@@ -42,9 +35,7 @@ isError:{
 },
 errorMessage:{
     type:String,
-
-}
-  
+} 
 },
 {timestamps:true}
 
