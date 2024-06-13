@@ -5,10 +5,10 @@ import { passwordValidator } from "../utils/passwordValidator.util.js";
 // user/register
 // desc: Api for creating new admins
 const registerUser = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, role } = req.body;
   try {
     // sanitiasing inputs
-    const isEmptyFields = [firstName, lastName, email, password].some(
+    const isEmptyFields = [firstName, lastName, email, password, role].some(
       (field) => field?.trim() === ""
     );
     if (isEmptyFields) {
@@ -30,7 +30,7 @@ const registerUser = async (req, res) => {
     }
 
     //user creation
-    const user = await User.create({ firstName, lastName, email, password });
+    const user = await User.create({ firstName, lastName, email, password, role });
     const createdUser = await User.findOne({ _id: user._id }).select(
       "-password"
     );
@@ -82,5 +82,9 @@ const loginUser = async (req,res) =>{
     return res.status(500).json({ message:  `Internal Server due to ${err.message}`});
   }
 }
+
+//@GET
+// user/users
+// desc: Paginated api for getting all users with role customer
 
 export { registerUser, loginUser }
