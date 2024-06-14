@@ -30,7 +30,13 @@ const registerUser = async (req, res) => {
     }
 
     //user creation
-    const user = await User.create({ firstName, lastName, email, password, role });
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+    });
     const createdUser = await User.findOne({ _id: user._id }).select(
       "-password"
     );
@@ -45,7 +51,7 @@ const registerUser = async (req, res) => {
       .status(500)
       .json({ message: `Internal Server due to ${err.message}` });
   }
-}
+};
 
 // @POST
 // user/login
@@ -55,39 +61,40 @@ const loginUser = async (req, res) => {
 
   try {
     //sanitiasing inputs
-    const isEmptyFields = [email, password].some((field) => field?.trim() === "");
+    const isEmptyFields = [email, password].some(
+      (field) => field?.trim() === ""
+    );
     if (isEmptyFields) {
-      return res.status(400).json({ message: 'All fields are required' });
-
+      return res.status(400).json({ message: "All fields are required" });
     }
     //finding user and validating
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User doesn't exist" });
-
     }
     //verify password
 
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect) {
-      return res.status(401).json({ message: 'Incorrect password' });
-
-
+      return res.status(401).json({ message: "Incorrect password" });
     }
     //generate access token
     const accessToken = await user.generateAccessToken();
 
-    return res.status(200).json({ message: 'User validation Successful', token: accessToken })
+    return res
+      .status(200)
+      .json({ message: "User validation Successful", token: accessToken });
   } catch (err) {
-    return res.status(500).json({ message: `Internal Server due to ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message}` });
   }
-}
+};
 
 // @GET
 // user/customers
 // desc: Paginated api for getting all users with role customer
 const getAllCustomers = async (req, res) => {
-
   const { page = 1, limit = 10 } = req.query;
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);
@@ -96,33 +103,73 @@ const getAllCustomers = async (req, res) => {
   const skip = (pageNumber - 1) * limitNumber;
 
   try {
-
     // pagination logic
-    const totalCustomers = await User.countDocuments({ role: 'customer' });
+    const totalCustomers = await User.countDocuments({ role: "customer" });
     const totalPages = Math.ceil(totalCustomers / limitNumber);
     const hasNextPage = pageNumber < totalPages;
 
     // Find customers with pagination
-    const customers = await User.find({ role: 'customer' })
-      .select('firstName lastName email phone')
+    const customers = await User.find({ role: "customer" })
+      .select("firstName lastName email phone")
       .skip(skip)
       .limit(limitNumber);
 
     // Check if customers were found
     if (customers.length === 0) {
-      return res.status(404).json({ message: 'No customers found' });
+      return res.status(404).json({ message: "No customers found" });
     }
 
     // Respond with customer data and pagination info
     return res.status(200).json({
-      message: 'Customer data found',
-      data: { customers, hasNextPage, totalPages, currentPage: pageNumber }
+      message: "Customer data found",
+      data: { customers, hasNextPage, totalPages, currentPage: pageNumber },
     });
   } catch (err) {
     // Handle any errors
-    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to: ${err.message}` });
   }
-}
+};
+//@GET
+//user/affiliaters
+//desc: paginated api for getting all users with role affiliaters
+const getAllaffiliaters = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
 
+  //skip logic
+  const skip = (pageNumber - 1) * limitNumber;
 
-export { registerUser, loginUser, getAllCustomers }
+  try {
+    //pagination logic
+    const totalAffiliaters = await User.countDocuments({ role: "affiliaters" });
+    const totalPages = Math.ceil(totalAffiliaters / limitNumber);
+    const hasNextPage = pageNumber < totalPages;
+    //Find affiliates with pagination
+
+    const affiliatiers = await User.find({ role: "affiliaters" })
+      .select("firstName lastName email phone")
+      .skip(skip)
+      .limit(limitNumber);
+
+    //check if affiliaters were found
+    if (affiliatiers.length === 0) {
+      return res.status(404).json({ message: "No affiliaters  found" });
+    }
+
+    // Respond with affilaters data and pagination info
+    return res.status(200).json({
+      message: "affiliaters data found",
+      data: { affiliatiers, hasNextPage, totalPages, currentPage: pageNumber },
+    });
+  } catch (err) {
+    // Handle any errors
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to: ${err.message}` });
+  }
+};
+
+export { registerUser, loginUser, getAllCustomers, getAllaffiliaters };
