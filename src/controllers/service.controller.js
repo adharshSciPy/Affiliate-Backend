@@ -86,4 +86,82 @@ const deleteService = async (req, res) => {
   }
 };
 
-export { postService, deleteService };
+//PATCH
+//SERVICE/DETIALS
+//desc:Service detials api for serive
+
+const UpadateServiceDetials = async (req, res) => {
+  const { title, description, duration, price, discount, category, tags } =
+    req.body;
+  const { serviceId } = req.params;
+  try {
+    const service = await Service.findOne({ _id: serviceId });
+    if (!service) {
+      return res.status(404).json({ message: "Service doesn't exist" });
+    }
+    service.title = title;
+    service.description = description;
+    service.duration = duration;
+    service.price = price;
+    service.discount = discount;
+    service.category = category;
+    service.tags = tags;
+
+    await service.save();
+
+    return res.status(200).json({
+      message: "Service detials updated successfully",
+      data: service,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message} ` });
+  }
+};
+
+// @GET
+// Service/customers
+// desc: Paginated api for getting all users with role customer
+
+const getAllServices = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
+
+  console.log(page, limit);
+
+  // skip logic
+  const skip = (pageNumber - 1) * limitNumber;
+
+  try {
+    //pagination logic
+    const totalServices = await Service.countDocuments();
+    const totalPages = Math.ceil(totalServices / limitNumber);
+    const hasNextPage = pageNumber < totalPages;
+
+    // Find services with pagination
+    const services = await Service.find()
+      .select("title description duration price discount category tags mode")
+      .skip(skip)
+      .limit(limitNumber);
+
+    // Check if services were found
+    if (services.length === 0) {
+      return res.status(404).json({ message: "No services found" });
+    }
+
+    // Respond with services data and pagination info
+    return res.status(200).json({
+      message: "Service data found",
+      data: { services, hasNextPage, totalPages, currentPage: pageNumber },
+    });
+  } catch (err) {
+    // Handle any errors
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to: ${err.message}` });
+  }
+};
+
+export { postService, deleteService, UpadateServiceDetials, getAllServices };
