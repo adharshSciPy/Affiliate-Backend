@@ -3,9 +3,9 @@ import { Company } from "../models/company.model.js";
 import { User } from "../models/user.model.js";
 
 // @POST
-//admin payouts to company
+//ADMIN PAYOUTS TO COMPANY
 
-const createPayout = async (req, res) => {
+const adminToCompanyPayout = async (req, res) => {
   const { companyId, adminId } = req.params;
   const { amount, paymentMode, status } = req.body;
 
@@ -49,23 +49,21 @@ const createPayout = async (req, res) => {
   }
 };
 
-//admin payouts to affiliate marketer
 
-const savePayout = async (req, res) => {
+//ADMIN PAYOUTS TO AFFILIATE MARKETER
+
+const adminToAffiliatePayout = async (req, res) => {
   const { userId, adminId } = req.params;
   const { amount, paymentMode, status } = req.body;
 
   try {
     // sanitiasing inputs
-    if (!userId||!adminId) {
+    if (!userId || !adminId) {
       return res.status(401).json({ message: "user Id or admin Id missing" });
     }
-    const isEmptyFields = [
-      amount,
-      paymentMode,
-      status,
-      adminId,
-    ].some((field) => field === "");
+    const isEmptyFields = [amount, paymentMode, status, adminId].some(
+      (field) => field === ""
+    );
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });
     }
@@ -96,7 +94,7 @@ const savePayout = async (req, res) => {
   }
 };
 
-//deleting a payout
+//DELETE A PAYOUT
 
 const deletePayout = async (req, res) => {
   const { payoutId } = req.params;
@@ -116,4 +114,38 @@ const deletePayout = async (req, res) => {
   }
 };
 
-export { createPayout, savePayout, deletePayout };
+//PATCH
+
+const updatePayout = async (req, res) => {
+  const { amount, paymentMode, status } = req.body;
+  const { payoutId } = req.params;
+  try {
+    const payout = await Payout.findOne({ _id: payoutId });
+
+    if (!payout) {
+      return res.status(404).json({ message: "Payout id dosen't exist" });
+    }
+    payout.amount = amount;
+    payout.paymentMode = paymentMode;
+    payout.status = status;
+    payout.adminId = payout.adminId;
+
+    await payout.save();
+
+    return res.status(200).json({
+      message: "Payout details updated successfully",
+      data: payout,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message}` });
+  }
+};
+
+export {
+  adminToCompanyPayout,
+  adminToAffiliatePayout,
+  deletePayout,
+  updatePayout,
+};
