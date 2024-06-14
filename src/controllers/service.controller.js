@@ -86,4 +86,45 @@ const deleteService = async (req, res) => {
   }
 };
 
-export { postService, deleteService };
+//PATCH
+//SERVICE/DETIALS
+//desc:Service detials api for serive
+
+const serviceMoreDetials = async (req, res) => {
+  const {
+    title,
+    description,
+    duration,
+    price,
+    discount,
+    category,
+    tags,
+  } = req.body;
+  const { serviceId } = req.params;
+  try {
+    const service = await Service.findOne({ _id: serviceId });
+    if (!service) {
+      return res.status(404).json({ message: "Service doesn't exist" });
+    }
+    service.title = title;
+    service.description = description;
+    service.duration = duration;
+    service.price = price;
+    service.discount = discount;
+    service.category = category;
+    service.tags = tags;
+
+    await service.save();
+
+    return res.status(200).json({
+      message: "Service detials updated successfully",
+      data: service,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message} ` });
+  }
+};
+
+export { postService, deleteService, serviceMoreDetials };
