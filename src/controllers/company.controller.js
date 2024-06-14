@@ -151,4 +151,50 @@ const deleteCompany = async (req, res) => {
   }
 };
 
-export { registerCompany, loginCompany, companyMoreDetials, deleteCompany };
+//@GET
+//user/componies
+//desc: pginated api for getting all users with  role companies
+
+const getAllcompanies = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
+
+  // skip logic
+  const skip = (pageNumber - 1) * limitNumber;
+
+  try {
+    //pagination logic
+    const totalCompanies = await Company.countDocuments({ role: "company" });
+    const totalPages = Math.ceil(totalCompanies / limitNumber);
+    const hasNextPage = pageNumber < totalPages;
+    //Find companies with pagination
+    const companies = await Company.find({ role: "company" })
+      .select(" companyName email phoneNumber rating")
+      .skip(skip)
+      .limit(limitNumber);
+
+    //check if companies were found
+    if (companies.length === 0) {
+      return res.status(404).json({ message: "No companies found" });
+    }
+    //Respond with companies data and pagination ifo
+    return res.status(200).json({
+      message: "companies data found",
+      data: { companies, hasNextPage, totalPages, currentPage: pageNumber },
+    });
+  } catch (err) {
+    //Handle any errors
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to: ${err.message}` });
+  }
+};
+
+export {
+  registerCompany,
+  loginCompany,
+  companyMoreDetials,
+  deleteCompany,
+  getAllcompanies,
+};

@@ -144,12 +144,12 @@ const getAllaffiliaters = async (req, res) => {
 
   try {
     //pagination logic
-    const totalAffiliaters = await User.countDocuments({ role: "affiliaters" });
+    const totalAffiliaters = await User.countDocuments({ role: "affiliater" });
     const totalPages = Math.ceil(totalAffiliaters / limitNumber);
     const hasNextPage = pageNumber < totalPages;
     //Find affiliates with pagination
 
-    const affiliatiers = await User.find({ role: "affiliaters" })
+    const affiliatiers = await User.find({ role: "affiliater" })
       .select("firstName lastName email phone")
       .skip(skip)
       .limit(limitNumber);
