@@ -3,8 +3,8 @@ import { Company } from "../models/company.model.js";
 import { User } from "../models/user.model.js";
 
 // @POST
-//ADMIN PAYOUTS TO COMPANY
-
+// admin payouts to company
+// desc: Creating admin to company payout with all level of access to the system
 const adminToCompanyPayout = async (req, res) => {
   const { companyId, adminId } = req.params;
   const { amount, paymentMode, status } = req.body;
@@ -49,9 +49,9 @@ const adminToCompanyPayout = async (req, res) => {
   }
 };
 
-
-//ADMIN PAYOUTS TO AFFILIATE MARKETER
-
+// @POST
+// admin payouts to affiliate marketer
+// desc: Creating admin to affiliate payout with all level of access to the system
 const adminToAffiliatePayout = async (req, res) => {
   const { userId, adminId } = req.params;
   const { amount, paymentMode, status } = req.body;
@@ -94,8 +94,9 @@ const adminToAffiliatePayout = async (req, res) => {
   }
 };
 
-//DELETE A PAYOUT
-
+// @DELETE
+// payout detials/delete
+// desc: Payout detials delete api of payout
 const deletePayout = async (req, res) => {
   const { payoutId } = req.params;
   try {
@@ -114,8 +115,9 @@ const deletePayout = async (req, res) => {
   }
 };
 
-//PATCH
-
+// @PATCH
+// payout/detials
+// desc: Payout detials api of payout
 const updatePayout = async (req, res) => {
   const { amount, paymentMode, status } = req.body;
   const { payoutId } = req.params;
