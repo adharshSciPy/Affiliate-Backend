@@ -131,9 +131,10 @@ const getAllCustomers = async (req, res) => {
       .json({ message: `Internal server error due to: ${err.message}` });
   }
 };
-//@GET
-//user/affiliaters
-//desc: paginated api for getting all users with role affiliaters
+
+// @GET
+// user/affiliaters
+// desc: paginated api for getting all users with role affiliaters
 const getAllaffiliaters = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const pageNumber = parseInt(page, 10);

@@ -1,6 +1,9 @@
 import { Service } from "../models/service.model.js";
 import { Company } from "../models/company.model.js";
 
+// @POST
+// service/create
+// desc: Creating service with all level of access to the system
 const postService = async (req, res) => {
   const { companyId } = req.params;
   const {
@@ -60,8 +63,9 @@ const postService = async (req, res) => {
   }
 };
 
-//delete a service controller
-
+// @DELETE
+// service detials/delete
+// desc: Service detials delete api of service
 const deleteService = async (req, res) => {
   const { serviceId } = req.params;
   //find serviceId
@@ -86,10 +90,9 @@ const deleteService = async (req, res) => {
   }
 };
 
-//PATCH
-//SERVICE/DETIALS
-//desc:Service detials api for serive
-
+// @PATCH
+// service/detials
+// desc: Service detials api for serive
 const UpadateServiceDetials = async (req, res) => {
   const { title, description, duration, price, discount, category, tags } =
     req.body;
@@ -121,9 +124,8 @@ const UpadateServiceDetials = async (req, res) => {
 };
 
 // @GET
-// Service/customers
+// service/customers
 // desc: Paginated api for getting all users with role customer
-
 const getAllServices = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const pageNumber = parseInt(page, 10);

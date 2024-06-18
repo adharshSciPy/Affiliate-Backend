@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { Company } from "../models/company.model.js";
 import { passwordValidator } from "../utils/passwordValidator.util.js";
 
@@ -85,9 +84,10 @@ const loginCompany = async (req, res) => {
       .json({ message: `Internal Server due to ${err.message} ` });
   }
 };
-//PATCH
-//COMPANY/DETIALS
-// desc: Company Detials api of company
+
+// @PATCH
+// company/detials
+// desc: Company detials api of company
 const companyMoreDetials = async (req, res) => {
   const {
     companyName,
@@ -126,9 +126,10 @@ const companyMoreDetials = async (req, res) => {
       .json({ message: `Internal Server due to ${err.message} ` });
   }
 };
-//DELETE
-//COMPANY DETIALS/DELETE
-//desc: Company Detials delete api of company
+
+// @DELETE
+// company detials/delete
+// desc: Company detials delete api of company
 const deleteCompany = async (req, res) => {
   const { companyId } = req.params;
   try {
@@ -151,10 +152,9 @@ const deleteCompany = async (req, res) => {
   }
 };
 
-//@GET
-//user/componies
-//desc: pginated api for getting all users with  role companies
-
+// @GET
+// user/companies
+// desc: paginated api for getting all users with  role companies
 const getAllcompanies = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const pageNumber = parseInt(page, 10);

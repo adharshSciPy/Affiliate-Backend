@@ -38,6 +38,6 @@ errorMessage:{
 } 
 },
 {timestamps:true}
-
 );
+
 export const Transaction = mongoose.model("Transaction", transactionSchema);

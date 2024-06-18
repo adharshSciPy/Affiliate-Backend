@@ -5,7 +5,6 @@ import { Order } from "../models/order.model.js";
 // @POST
 // transaction/create
 // desc: Creating transaction with all level of access to the system
-
 const postTransaction = async(req,res)=> {
     const { userId,orderId } = req.params;
     const {transactionId, grandTotal, tax, paymentMode, status} = req.body;
