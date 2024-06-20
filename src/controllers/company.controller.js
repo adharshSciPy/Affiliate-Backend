@@ -10,7 +10,7 @@ const registerCompany = async (req, res) => {
   try {
     // sanitiasing inputs
     const isEmptyFields = [companyName, email, password].some(
-      (field) => field?.trim() === ""
+      (field) => field?.trim() === "" || field === undefined
     );
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });
@@ -57,7 +57,7 @@ const loginCompany = async (req, res) => {
   try {
     //sanitiasing inputs
     const isEmptyFields = [email, password].some(
-      (field) => field?.trim() === ""
+      (field) => field?.trim() === "" || field === undefined
     );
     if (isEmptyFields) {
       return res.status(400).json({ message: "All fields are required" });
