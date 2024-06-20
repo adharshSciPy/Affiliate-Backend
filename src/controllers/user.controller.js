@@ -6,10 +6,11 @@ import { passwordValidator } from "../utils/passwordValidator.util.js";
 // desc: Api for creating new admins
 const registerUser = async (req, res) => {
   const { firstName, lastName, email, password, role } = req.body;
+
   try {
     // sanitiasing inputs
     const isEmptyFields = [firstName, lastName, email, password, role].some(
-      (field) => field?.trim() === ""
+      (field) => field?.trim() === "" || field === undefined
     );
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });
@@ -17,12 +18,14 @@ const registerUser = async (req, res) => {
 
     //validate password
     const isValidPassword = passwordValidator(password);
+
     if (!isValidPassword) {
       return res.status(401).json({
         message:
           "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, and one number",
       });
     }
+
     //prevent duplicate accounts
     const isAlreadyExistingUser = await User.findOne({ email: email });
     if (isAlreadyExistingUser) {
