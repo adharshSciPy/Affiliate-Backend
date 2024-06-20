@@ -1,6 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
 
-
 const serviceSchema = new Schema({
     title: {
         type: String,
@@ -16,7 +15,6 @@ const serviceSchema = new Schema({
     price:{
         type:Number,
         required: [true, 'price is required']
-
     },
     discount:{
         type:Number,

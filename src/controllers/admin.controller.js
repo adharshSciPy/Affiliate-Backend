@@ -1,5 +1,5 @@
 import { Admin } from "../models/admin.model.js"
-import { passwordValidator } from "../utils/passwordValidator.util.js"
+import { passwordValidator } from "../utils/passwordValidator.js"
 
 // @POST
 // admin/register

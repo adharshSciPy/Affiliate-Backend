@@ -3,27 +3,27 @@ import { User } from "../models/user.model.js";
 import { Order } from "../models/order.model.js";
 
 // @POST
-// transaction/create
+// transaction/transactions
 // desc: Creating transaction with all level of access to the system
-const postTransaction = async(req,res)=> {
-    const { userId,orderId } = req.params;
-    const {transactionId, grandTotal, tax, paymentMode, status} = req.body;
-    try {
-        // sanitiasing inputs
+const postTransaction = async (req, res) => {
+  const { userId, orderId } = req.params;
+  const { transactionId, grandTotal, tax, paymentMode, status } = req.body;
+  try {
+    // sanitiasing inputs
 
-        if (!userId || !orderId) {
-            return res
-              .status(401)
-              .json({ message: "User Id or Order Id is missing" });
-          }    
+    if (!userId || !orderId) {
+      return res
+        .status(401)
+        .json({ message: "User Id or Order Id is missing" });
+    }
     const isEmptyFields = [transactionId, grandTotal, tax, paymentMode, status].some(
-        (field) => field === ""
-      );
-      if (isEmptyFields) {
-        return res.status(401).json({ message: "All fields are required" });
-      }
+      (field) => field === ""
+    );
+    if (isEmptyFields) {
+      return res.status(401).json({ message: "All fields are required" });
+    }
 
-      // Check if the user is valid
+    // Check if the user is valid
     const user = await User.findOne({ _id: userId });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -37,21 +37,21 @@ const postTransaction = async(req,res)=> {
     //transaction creation
 
     const transaction = await Transaction.create({
-        transactionId, userId, orderId, grandTotal, tax, paymentMode, status
-      });
-      const createdTransaction = await Transaction.findOne({ _id: transaction._id });
-      if (!createdTransaction) {
-        return res.status(500).json({ message: "Transaction is failed " });
-      }
-  
-      return res.status(201).json({ message: "Transaction is successful " });
+      transactionId, userId, orderId, grandTotal, tax, paymentMode, status
+    });
+    const createdTransaction = await Transaction.findOne({ _id: transaction._id });
+    if (!createdTransaction) {
+      return res.status(500).json({ message: "Transaction is failed " });
+    }
 
-      
-    } catch (err) {
-        return res
+    return res.status(201).json({ message: "Transaction is successful " });
+
+
+  } catch (err) {
+    return res
       .status(500)
       .json({ message: `Internal Server due to ${err.message}` });
-    }
+  }
 
 }
 

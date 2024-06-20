@@ -1,6 +1,6 @@
 import express from "express"
 import cors from 'cors';
-import { limiter } from "./utils/api.util.js"
+import { limiter } from "./utils/apilimiter.js"
 
 //importing routes
 import adminRoute from "./routers/admin.router.js"

@@ -1,5 +1,5 @@
 import { User } from "../models/user.model.js";
-import { passwordValidator } from "../utils/passwordValidator.util.js";
+import { passwordValidator } from "../utils/passwordValidator.js";
 
 // @POST
 // user/register
