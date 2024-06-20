@@ -30,7 +30,7 @@ const postService = async (req, res) => {
       category,
       tags,
       mode,
-    ].some((field) => field === "");
+    ].some((field) => field === "" || field === undefined);
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });
     }

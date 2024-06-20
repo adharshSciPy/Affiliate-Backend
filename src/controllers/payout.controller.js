@@ -17,7 +17,7 @@ const adminToCompanyPayout = async (req, res) => {
         .json({ message: "Company Id or admin Id missing" });
     }
     const isEmptyFields = [amount, paymentMode, status, adminId].some(
-      (field) => field === ""
+      (field) => field === "" || field === undefined
     );
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });
@@ -62,7 +62,7 @@ const adminToAffiliatePayout = async (req, res) => {
       return res.status(401).json({ message: "user Id or admin Id missing" });
     }
     const isEmptyFields = [amount, paymentMode, status, adminId].some(
-      (field) => field === ""
+      (field) => field === "" || field === undefined
     );
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });

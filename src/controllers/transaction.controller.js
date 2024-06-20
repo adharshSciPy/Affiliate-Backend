@@ -17,11 +17,11 @@ const postTransaction = async (req, res) => {
         .json({ message: "User Id or Order Id is missing" });
     }
     const isEmptyFields = [transactionId, grandTotal, tax, paymentMode, status].some(
-      (field) => field === ""
-    );
-    if (isEmptyFields) {
-      return res.status(401).json({ message: "All fields are required" });
-    }
+        (field) => field === "" || field === undefined
+      );
+      if (isEmptyFields) {
+        return res.status(401).json({ message: "All fields are required" });
+      }
 
     // Check if the user is valid
     const user = await User.findOne({ _id: userId });

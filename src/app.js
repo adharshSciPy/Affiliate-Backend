@@ -9,6 +9,7 @@ import companyRoute from "./routers/company.router.js"
 import serviceRoute from "./routers/service.router.js"
 import transactionRoute from "./routers/transaction.router.js"
 import payoutRoute from "./routers/payout.router.js"
+import orderRoute from "./routers/order.router.js";
 
 const app = express()
 
@@ -25,5 +26,6 @@ app.use('/api/v1/company',companyRoute)
 app.use('/api/v1/service',serviceRoute)
 app.use('/api/v1/transaction',transactionRoute)
 app.use('/api/v1/payout',payoutRoute)
+app.use('/api/v1/order', orderRoute)
 
 export { app }
