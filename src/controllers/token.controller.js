@@ -13,6 +13,18 @@ const generateToken = async (req, res) => {
     }
 }
 
+// @GET
+// token/tokens
+// desc: Paginated api for getting all tokens
+const getAllTokens = async (req, res) => {
+    try {
+
+    }
+    catch (err) {
+        return res.status(500).json({ message: `Internal Server due to ${err.message}` });
+    }
+}
+
 // @PATCH
 // token/tokens/:tokenId
 // desc: Update token usageTimes field 
@@ -30,7 +42,7 @@ const updateTokenUsage = async (req, res) => {
 // desc: Update token useCount field 
 const updateTokenUseCount = async (req, res) => {
     try {
-        
+
     }
     catch (err) {
         return res.status(500).json({ message: `Internal Server due to ${err.message}` });
@@ -42,7 +54,7 @@ const updateTokenUseCount = async (req, res) => {
 // desc: Delete a token
 const deleteToken = async (req, res) => {
     try {
-        
+
     }
     catch (err) {
         return res.status(500).json({ message: `Internal Server due to ${err.message}` });

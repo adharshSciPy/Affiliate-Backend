@@ -30,16 +30,16 @@ const tokenSchema = new Schema({
 
 // is token's usage times exced or not
 tokenSchema.methods.isTokenUsageExceeded = function (usageTimes) {
-    return usageTimes > this.useCount;
+    return usageTimes < this.useCount;
 };
 
 // generate unique token and save it in the database
-tokenSchema.methods.generateAndSaveUniqueToken = async function (affName, affId, date, year) {
-    let token = generateToken();
+tokenSchema.methods.generateAndSaveUniqueToken = async function (name) {
+    let token = generateToken(name);
 
     let existingToken = await mongoose.model('Token').findOne({ token });
     while (existingToken) {
-        token = generateToken();
+        token = generateToken(name);
         existingToken = await mongoose.model('Token').findOne({ token });
     }
 
@@ -47,7 +47,5 @@ tokenSchema.methods.generateAndSaveUniqueToken = async function (affName, affId,
     await this.save();
     return token;
 };
-
-
 
 export const Token = mongoose.model('Token', tokenSchema)
