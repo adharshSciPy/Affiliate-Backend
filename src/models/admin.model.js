@@ -49,7 +49,7 @@ adminSchema.pre("save", async function (next) {
 adminSchema.methods.generateAccessToken = async function () {
   return jwt.sign(
     {
-      _id: this._id,
+      id: this._id,
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
@@ -58,6 +58,21 @@ adminSchema.methods.generateAccessToken = async function () {
     process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
+
+// genarate refresh token
+adminSchema.methods.generateRefreshToken = async function () {
+  return jwt.sign(
+    {
+      id: this._id,
+      email: this.email,
+      role: this.role,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY
     }
   );
 };
