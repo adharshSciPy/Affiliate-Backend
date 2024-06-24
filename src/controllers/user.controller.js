@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js";
+import jwt from 'jsonwebtoken'
 import { passwordValidator } from "../utils/passwordValidator.js";
 
 // @POST
@@ -84,6 +85,17 @@ const loginUser = async (req, res) => {
     //generate access token
     const accessToken = await user.generateAccessToken();
 
+    //generate refresh token
+    const refreshToken = await user.generateRefreshToken();
+
+    //store refresh token in cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,  // when going to production change boolean to true
+      sameSite: 'None',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
     return res
       .status(200)
       .json({ message: "User validation Successful", token: accessToken });
@@ -93,6 +105,70 @@ const loginUser = async (req, res) => {
       .json({ message: `Internal Server due to ${err.message}` });
   }
 };
+
+// @GET
+// user/refresh
+// desc:To create new access token once it has expired
+const refreshUserAccessToken = async (req, res) => {
+  const { refreshToken } = req.cookies
+
+  try {
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Unauthorized api request" });
+    }
+
+    jwt.verify(refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+      async (err, decoded) => {
+        if (err) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+
+        // find user
+        const user = await User.findOne({ _id: decoded?.id })
+        if (!user) {
+          return res.status(404).json({ message: "Cannot find user" });
+        }
+
+        //generate new access token
+        const accessToken = await user.generateAccessToken();
+        return res
+          .status(200)
+          .json({ message: "User validation Successful", token: accessToken });
+      }
+    )
+  }
+  catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message}` });
+  }
+}
+
+// @POST
+// user/logout
+// desc: To logout a user and clear cookies
+const logoutUser = async (req, res) => {
+  try {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      return res.status(204).json({ message: "Invalid Cookie" });
+    }
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: false,  // Secure only in production
+      sameSite: 'None',
+    });
+
+    return res.status(200).json({ message: "Logout successful" });
+  } catch (err) {
+    console.error('Error during logout:', err);
+    return res.status(500).json({ message: `Internal Server Error: ${err.message}` });
+  }
+};
+
 
 // @GET
 // user/customers
@@ -176,4 +252,4 @@ const getAllaffiliaters = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getAllCustomers, getAllaffiliaters };
+export { registerUser, loginUser, refreshUserAccessToken, logoutUser, getAllCustomers, getAllaffiliaters };

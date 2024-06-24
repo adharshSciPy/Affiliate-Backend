@@ -32,17 +32,17 @@ const userSchema = new Schema({
         trim: true,
     },
     password: {
-        type: String,  
+        type: String,
         required: [true, 'Password is required']
     },
 
     socialLinks: {
-        type: [''],  
+        type: [''],
     }
 },
     { timestamps: true })
 
-    // hashing admin password
+// hashing admin password
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
 
@@ -59,7 +59,7 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.generateAccessToken = async function () {
     return jwt.sign(
         {
-            _id: this._id,
+            id: this._id,
             firstName: this.firstName,
             lastName: this.lastName,
             email: this.email,
@@ -72,8 +72,22 @@ userSchema.methods.generateAccessToken = async function () {
     );
 }
 
-// matching admin password
+// generate refresh token
+userSchema.methods.generateRefreshToken = async function () {
+    return jwt.sign(
+        {
+            id: this._id,
+            email: this.email,
+            role: this.role
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    );
+}
 
+// matching admin password
 userSchema.methods.isPasswordCorrect = async function (password) {
     if (password) {
         return await bcrypt.compare(password, this.password)
