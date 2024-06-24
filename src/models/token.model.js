@@ -34,12 +34,12 @@ tokenSchema.methods.isTokenUsageExceeded = function (usageTimes) {
 };
 
 // generate unique token and save it in the database
-tokenSchema.methods.generateAndSaveUniqueToken = async function (name) {
-    let token = generateToken(name);
+tokenSchema.methods.generateAndSaveUniqueToken = async function (firstName, lastName) {
+    let token = generateToken(firstName, lastName);
 
     let existingToken = await mongoose.model('Token').findOne({ token });
     while (existingToken) {
-        token = generateToken(name);
+        token = generateToken(firstName, lastName);
         existingToken = await mongoose.model('Token').findOne({ token });
     }
 

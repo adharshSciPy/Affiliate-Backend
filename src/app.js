@@ -11,6 +11,7 @@ import serviceRoute from "./routers/service.router.js"
 import transactionRoute from "./routers/transaction.router.js"
 import payoutRoute from "./routers/payout.router.js"
 import orderRoute from "./routers/order.router.js";
+import tokenRoute from "./routers/token.router.js";
 
 const app = express()
 
@@ -29,5 +30,6 @@ app.use('/api/v1/service', serviceRoute)
 app.use('/api/v1/transaction', transactionRoute)
 app.use('/api/v1/payout', payoutRoute)
 app.use('/api/v1/order', orderRoute)
+app.use('/api/v1/token', tokenRoute)
 
 export { app }
