@@ -83,6 +83,21 @@ companySchema.methods.generateAccessToken = async function () {
   );
 };
 
+// generate refresh token
+companySchema.methods.generateRefreshToken = async function () {
+  return jwt.sign(
+      {
+          id: this._id,
+          email: this.email,
+          role: this.role
+      },
+      process.env.REFRESH_TOKEN_SECRET,
+      {
+          expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+      }
+  );
+}
+
 // matching company password
 companySchema.methods.isPasswordCorrect = async function (password) {
   if (password) {
