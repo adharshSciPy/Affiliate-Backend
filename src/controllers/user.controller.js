@@ -1,4 +1,7 @@
 import { User } from "../models/user.model.js";
+import { Company } from "../models/company.model.js";
+import { Admin } from "../models/admin.model.js";
+
 import jwt from 'jsonwebtoken'
 import { passwordValidator } from "../utils/passwordValidator.js";
 
@@ -108,8 +111,8 @@ const loginUser = async (req, res) => {
 
 // @GET
 // user/refresh
-// desc:To create new access token once it has expired
-const refreshUserAccessToken = async (req, res) => {
+// desc: To create new access token once it has expired (for all user roles -> Admin, Company and User)
+const refreshAccessToken = async (req, res) => {
   const { refreshToken } = req.cookies
 
   try {
@@ -126,7 +129,9 @@ const refreshUserAccessToken = async (req, res) => {
 
         // find user
         const user = await User.findOne({ _id: decoded?.id })
-        if (!user) {
+        const admin = await Admin.findOne({ _id: decoded?.id })
+        const company = await Company.findOne({ _id: decoded?.id })
+        if (!user && !admin && !company) {
           return res.status(404).json({ message: "Cannot find user" });
         }
 
@@ -252,4 +257,4 @@ const getAllaffiliaters = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, refreshUserAccessToken, logoutUser, getAllCustomers, getAllaffiliaters };
+export { registerUser, loginUser, refreshAccessToken, logoutUser, getAllCustomers, getAllaffiliaters };
