@@ -13,8 +13,6 @@ const userSchema = new Schema({
     },
     role: {
         type: Number,
-        trim: true,
-        default: 'customer'
     },
 
     officialId: {
@@ -66,9 +64,10 @@ userSchema.methods.generateAccessToken = async function () {
             role: this.role
         },
         process.env.ACCESS_TOKEN_SECRET,
-        {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-        }
+        { expiresIn: '7d' }
+        // {
+        //     expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        // }
     );
 }
 
@@ -81,9 +80,10 @@ userSchema.methods.generateRefreshToken = async function () {
             role: this.role
         },
         process.env.REFRESH_TOKEN_SECRET,
-        {
-            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-        }
+        { expiresIn: '7d' }
+        // {
+        //     expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        // }
     );
 }
 
