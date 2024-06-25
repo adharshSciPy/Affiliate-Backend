@@ -136,16 +136,16 @@ const refreshAccessToken = async (req, res) => {
 
         let user;
         switch (decoded.role) {
-          case "admin":
+          case process.env.ADMIN_ROLE:
             user = await Admin.findOne({ _id: decoded.id });
             break;
-          case "customer":
+          case process.env.CUSTOMER_ROLE:
             user = await User.findOne({ _id: decoded.id });
             break;
-          case "affiliater":
+          case process.env.AFFILIATER_ROLE:
             user = await User.findOne({ _id: decoded.id });
             break;
-          case "company":
+          case process.env.CUSTOMER_ROLE:
             user = await Company.findOne({ _id: decoded.id });
             break;
           default:
