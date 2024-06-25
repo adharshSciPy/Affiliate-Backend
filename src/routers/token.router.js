@@ -1,9 +1,9 @@
 import { Router } from "express"
 import { generateToken, updateTokenUseCount } from "../controllers/token.controller.js"
 
-const userRoute = Router()
+const tokenRoute = Router()
 
-userRoute.route('/tokens').post(generateToken)
-userRoute.route('/tokens/:tokenId').patch(updateTokenUseCount)
+tokenRoute.route('/tokens').post(generateToken)
+tokenRoute.route('/tokens/:tokenId').patch(updateTokenUseCount)
 
-export default userRoute
+export default tokenRoute
