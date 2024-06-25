@@ -2,7 +2,7 @@ import { User } from "../models/user.model.js";
 import { Company } from "../models/company.model.js";
 import { Admin } from "../models/admin.model.js";
 
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 import { passwordValidator } from "../utils/passwordValidator.js";
 
 // @POST
@@ -34,7 +34,11 @@ const registerUser = async (req, res) => {
     const isAlreadyExistingCompany = await Company.findOne({ email: email });
     const isAlreadyExistingAdmin = await Admin.findOne({ email: email });
     const isAlreadyExistingUser = await User.findOne({ email: email });
-    if (isAlreadyExistingUser || isAlreadyExistingCompany || isAlreadyExistingAdmin) {
+    if (
+      isAlreadyExistingUser ||
+      isAlreadyExistingCompany ||
+      isAlreadyExistingAdmin
+    ) {
       return res.status(409).json({ message: "Email is already in use" });
     }
 
@@ -96,9 +100,9 @@ const loginUser = async (req, res) => {
     //store refresh token in cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,  // when going to production change boolean to true
-      sameSite: 'None',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      secure: false, // when going to production change boolean to true
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res
@@ -115,42 +119,55 @@ const loginUser = async (req, res) => {
 // user/refresh
 // desc: To create new access token once it has expired (for all user roles -> Admin, Company and User)
 const refreshAccessToken = async (req, res) => {
-  const { refreshToken } = req.cookies
+  const { refreshToken } = req.cookies;
 
   try {
     if (!refreshToken) {
-      return res.status(401).json({ message: "Unauthorized api request" });
+      return res.status(401).json({ message: "Unauthorized API request" });
     }
 
-    jwt.verify(refreshToken,
+    jwt.verify(
+      refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
       async (err, decoded) => {
         if (err) {
           return res.status(403).json({ message: "Forbidden" });
         }
 
-        // find user
-        const user = await User.findOne({ _id: decoded?.id })
-        const admin = await Admin.findOne({ _id: decoded?.id })
-        const company = await Company.findOne({ _id: decoded?.id })
-        if (!user && !admin && !company) {
+        let user;
+        switch (decoded.role) {
+          case process.env.ADMIN_ROLE:
+            user = await Admin.findOne({ _id: decoded.id });
+            break;
+          case process.env.CUSTOMER_ROLE:
+            user = await User.findOne({ _id: decoded.id });
+            break;
+          case process.env.AFFILIATER_ROLE:
+            user = await User.findOne({ _id: decoded.id });
+            break;
+          case process.env.CUSTOMER_ROLE:
+            user = await Company.findOne({ _id: decoded.id });
+            break;
+          default:
+            return res.status(404).json({ message: "Invalid role" });
+        }
+
+        if (!user) {
           return res.status(404).json({ message: "Cannot find user" });
         }
 
-        //generate new access token
         const accessToken = await user.generateAccessToken();
         return res
           .status(200)
-          .json({ message: "User validation Successful", token: accessToken });
+          .json({ message: "User validation successful", data: accessToken });
       }
-    )
-  }
-  catch (err) {
+    );
+  } catch (err) {
     return res
       .status(500)
-      .json({ message: `Internal Server due to ${err.message}` });
+      .json({ message: `Internal server error due to ${err.message}` });
   }
-}
+};
 
 // @POST
 // user/logout
@@ -163,19 +180,20 @@ const logoutUser = async (req, res) => {
       return res.status(204).json({ message: "Invalid Cookie" });
     }
 
-    res.clearCookie('refreshToken', {
+    res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: false,  // Secure only in production
-      sameSite: 'None',
+      secure: false, // Secure only in production
+      sameSite: "None",
     });
 
     return res.status(200).json({ message: "Logout successful" });
   } catch (err) {
-    console.error('Error during logout:', err);
-    return res.status(500).json({ message: `Internal Server Error: ${err.message}` });
+    console.error("Error during logout:", err);
+    return res
+      .status(500)
+      .json({ message: `Internal Server Error: ${err.message}` });
   }
 };
-
 
 // @GET
 // user/customers
@@ -190,12 +208,13 @@ const getAllCustomers = async (req, res) => {
 
   try {
     // pagination logic
-    const totalCustomers = await User.countDocuments({ role: "customer" });
+    const role = process.env.CUSTOMER_ROLE;
+    const totalCustomers = await User.countDocuments({ role });
     const totalPages = Math.ceil(totalCustomers / limitNumber);
     const hasNextPage = pageNumber < totalPages;
 
     // Find customers with pagination
-    const customers = await User.find({ role: "customer" })
+    const customers = await User.find({ role })
       .select("firstName lastName email phone")
       .skip(skip)
       .limit(limitNumber);
@@ -231,12 +250,13 @@ const getAllaffiliaters = async (req, res) => {
 
   try {
     //pagination logic
-    const totalAffiliaters = await User.countDocuments({ role: "affiliater" });
+    const role = process.env.AFFILIATER_ROLE;
+    const totalAffiliaters = await User.countDocuments({ role });
     const totalPages = Math.ceil(totalAffiliaters / limitNumber);
     const hasNextPage = pageNumber < totalPages;
     //Find affiliates with pagination
 
-    const affiliatiers = await User.find({ role: "affiliater" })
+    const affiliatiers = await User.find({ role })
       .select("firstName lastName email phone")
       .skip(skip)
       .limit(limitNumber);
@@ -259,4 +279,11 @@ const getAllaffiliaters = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, refreshAccessToken, logoutUser, getAllCustomers, getAllaffiliaters };
+export {
+  registerUser,
+  loginUser,
+  refreshAccessToken,
+  logoutUser,
+  getAllCustomers,
+  getAllaffiliaters,
+};

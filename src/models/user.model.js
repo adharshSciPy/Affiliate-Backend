@@ -12,7 +12,7 @@ const userSchema = new Schema({
         required: [true, 'Last Name is required']
     },
     role: {
-        type: String,
+        type: Number,
         trim: true,
         default: 'customer'
     },

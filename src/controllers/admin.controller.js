@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 import { Admin } from "../models/admin.model.js";
-import { Company } from '../models/company.model.js';
-import { User } from '../models/user.model.js';
+import { Company } from "../models/company.model.js";
+import { User } from "../models/user.model.js";
 import { passwordValidator } from "../utils/passwordValidator.js";
 
 // @POST
@@ -32,12 +32,23 @@ const registerAdmin = async (req, res) => {
     const isAlreadyExistingCompany = await Company.findOne({ email: email });
     const isAlreadyExistingAdmin = await Admin.findOne({ email: email });
     const isAlreadyExistingUser = await User.findOne({ email: email });
-    if (isAlreadyExistingUser || isAlreadyExistingCompany || isAlreadyExistingAdmin) {
+    if (
+      isAlreadyExistingUser ||
+      isAlreadyExistingCompany ||
+      isAlreadyExistingAdmin
+    ) {
       return res.status(409).json({ message: "Email is already in use" });
     }
 
     //admin creation
-    const admin = await Admin.create({ firstName, lastName, email, password });
+    const role = process.env.ADMIN_ROLE;
+    const admin = await Admin.create({
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+    });
     const createdAdmin = await Admin.findOne({ _id: admin._id }).select(
       "-password"
     );
@@ -105,67 +116,30 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-// @GET
-// admin/refresh
-// desc:To create new access token once it has expired
-const refreshAdminAccessToken = async (req, res) => {
-  const { refreshToken } = req.cookies;
-
-  try {
-    if (!refreshToken) {
-      return res.status(402).json({ message: "'Unauthorized api request" });
-    }
-
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
-      async (err, decoded) => {
-        if (err) {
-          return res.status(403).json({ message: "Forbidden" });
-        }
-
-        // find admin
-        const admin = await Admin.findOne({ _id: decoded?.id });
-        if (!admin) {
-          return res.status(404).json({ message: "Cannot find admin" });
-        }
-
-        //generate new access token
-        const accessToken = await admin.generateAccessToken();
-        return res
-          .status(200)
-          .json({ message: "Admin validation Successful", token: accessToken });
-      }
-    );
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ message: `Internal Server due to ${err.message}` });
-  }
-};
-
 // @POST
 // user/logout
 // desc: To logout a user and clear cookies
 const logoutAdmin = async (req, res) => {
-    try {
-      const { refreshToken } = req.cookies;
-  
-      if (!refreshToken) {
-        return res.status(204).json({ message: "Invalid Cookie" });
-      }
-  
-      res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: false,  // Secure only in production
-        sameSite: 'None',
-      });
-  
-      return res.status(200).json({ message: "Logout successful" });
-    } catch (err) {
-      console.error('Error during logout:', err);
-      return res.status(500).json({ message: `Internal Server Error: ${err.message}` });
-    }
-  };
+  try {
+    const { refreshToken } = req.cookies;
 
-export { registerAdmin, loginAdmin,refreshAdminAccessToken,logoutAdmin };
+    if (!refreshToken) {
+      return res.status(204).json({ message: "Invalid Cookie" });
+    }
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false, // Secure only in production
+      sameSite: "None",
+    });
+
+    return res.status(200).json({ message: "Logout successful" });
+  } catch (err) {
+    console.error("Error during logout:", err);
+    return res
+      .status(500)
+      .json({ message: `Internal Server Error: ${err.message}` });
+  }
+};
+
+export { registerAdmin, loginAdmin, logoutAdmin };

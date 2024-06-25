@@ -9,7 +9,7 @@ const companySchema = new Schema(
       required: [true, "Company Name is required"],
     },
     role: {
-      type: String,
+      type: Number,
       trim: true,
       default: "company",
     },
