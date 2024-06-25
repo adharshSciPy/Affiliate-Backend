@@ -115,42 +115,55 @@ const loginUser = async (req, res) => {
 // user/refresh
 // desc: To create new access token once it has expired (for all user roles -> Admin, Company and User)
 const refreshAccessToken = async (req, res) => {
-  const { refreshToken } = req.cookies
+  const { refreshToken } = req.cookies;
 
   try {
     if (!refreshToken) {
-      return res.status(401).json({ message: "Unauthorized api request" });
+      return res.status(401).json({ message: "Unauthorized API request" });
     }
 
-    jwt.verify(refreshToken,
+    jwt.verify(
+      refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
       async (err, decoded) => {
         if (err) {
           return res.status(403).json({ message: "Forbidden" });
         }
 
-        // find user
-        const user = await User.findOne({ _id: decoded?.id })
-        const admin = await Admin.findOne({ _id: decoded?.id })
-        const company = await Company.findOne({ _id: decoded?.id })
-        if (!user && !admin && !company) {
+        let user;
+        switch (decoded.role) {
+          case "admin":
+            user = await Admin.findOne({ _id: decoded.id });
+            break;
+          case "customer":
+            user = await User.findOne({ _id: decoded.id });
+            break;
+          case "affiliater":
+            user = await User.findOne({ _id: decoded.id });
+            break;
+          case "company":
+            user = await Company.findOne({ _id: decoded.id });
+            break;
+          default:
+            return res.status(404).json({ message: "Invalid role" });
+        }
+
+        if (!user) {
           return res.status(404).json({ message: "Cannot find user" });
         }
 
-        //generate new access token
         const accessToken = await user.generateAccessToken();
         return res
           .status(200)
-          .json({ message: "User validation Successful", data: accessToken });
+          .json({ message: "User validation successful", data: accessToken });
       }
-    )
-  }
-  catch (err) {
+    );
+  } catch (err) {
     return res
       .status(500)
-      .json({ message: `Internal Server due to ${err.message}` });
+      .json({ message: `Internal server error due to ${err.message}` });
   }
-}
+};
 
 // @POST
 // user/logout
