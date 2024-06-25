@@ -31,8 +31,10 @@ const registerUser = async (req, res) => {
     }
 
     //prevent duplicate accounts
+    const isAlreadyExistingCompany = await Company.findOne({ email: email });
+    const isAlreadyExistingAdmin = await Admin.findOne({ email: email });
     const isAlreadyExistingUser = await User.findOne({ email: email });
-    if (isAlreadyExistingUser) {
+    if (isAlreadyExistingUser || isAlreadyExistingCompany || isAlreadyExistingAdmin) {
       return res.status(409).json({ message: "Email is already in use" });
     }
 

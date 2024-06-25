@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { Admin } from "../models/admin.model.js";
+import { Company } from '../models/company.model.js';
+import { User } from '../models/user.model.js';
 import { passwordValidator } from "../utils/passwordValidator.js";
 
 // @POST
@@ -27,8 +29,10 @@ const registerAdmin = async (req, res) => {
     }
 
     //prevent duplicate accounts
-    const isAlreadyExistingUser = await Admin.findOne({ email: email });
-    if (isAlreadyExistingUser) {
+    const isAlreadyExistingCompany = await Company.findOne({ email: email });
+    const isAlreadyExistingAdmin = await Admin.findOne({ email: email });
+    const isAlreadyExistingUser = await User.findOne({ email: email });
+    if (isAlreadyExistingUser || isAlreadyExistingCompany || isAlreadyExistingAdmin) {
       return res.status(409).json({ message: "Email is already in use" });
     }
 
