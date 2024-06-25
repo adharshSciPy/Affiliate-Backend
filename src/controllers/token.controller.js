@@ -56,7 +56,24 @@ const getAllTokens = async (req, res) => {
 // desc: Update token usageTimes field 
 const updateTokenUsage = async (req, res) => {
     try {
+        const { tokenId } = req.params;
+        const { usageTimes } = req.body;
+        const token = await Token.findOne({ _id: tokenId })
+        if (!token) {
+            return res.status(404).json({ message: "Token doesn't exist" })
+        }
+        const times = await token.isTokenUsageExceeded(usageTimes)
+        if (token.usageTimes !== undefined) {
+            if (times === false) {
+                return res.status(401).json({ message: "Usage times cannot exceed use count" })
+            }
+            token.usageTimes = usageTimes;
+        } else if (token.usageTimes === undefined) {
+            token.usageTimes = 0;
+        }
+        await token.save();
 
+        return res.status(200).json({ message: "Token usage updated successfully", data: token })
     }
     catch (err) {
         return res.status(500).json({ message: `Internal Server due to ${err.message}` });
@@ -83,7 +100,7 @@ const updateTokenUseCount = async (req, res) => {
         });
     }
     catch (err) {
-        return res.status(500).json({ message:`Internal Server due to ${err.message}` });
+        return res.status(500).json({ message: `Internal Server due to ${err.message}` });
     }
 }
 
@@ -99,4 +116,4 @@ const deleteToken = async (req, res) => {
     }
 }
 
-export { generateToken, updateTokenUseCount }
+export { generateToken, updateTokenUseCount, updateTokenUsage }
