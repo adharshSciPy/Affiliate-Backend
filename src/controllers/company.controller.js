@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 import { Company } from "../models/company.model.js";
-import { Admin } from '../models/admin.model.js';
-import { User } from '../models/user.model.js';
+import { Admin } from "../models/admin.model.js";
+import { User } from "../models/user.model.js";
 import { passwordValidator } from "../utils/passwordValidator.js";
 
 // @POST
@@ -32,7 +32,11 @@ const registerCompany = async (req, res) => {
     const isAlreadyExistingComapny = await Company.findOne({ email: email });
     const isAlreadyExistingAdmin = await Admin.findOne({ email: email });
     const isAlreadyExistingUser = await User.findOne({ email: email });
-    if (isAlreadyExistingUser || isAlreadyExistingComapny || isAlreadyExistingAdmin) {
+    if (
+      isAlreadyExistingUser ||
+      isAlreadyExistingComapny ||
+      isAlreadyExistingAdmin
+    ) {
       return res.status(409).json({ message: "Email is already in use" });
     }
 
@@ -128,12 +132,10 @@ const refreshCompanyAccessToken = async (req, res) => {
 
         //generate new access token
         const accessToken = await company.generateAccessToken();
-        return res
-          .status(200)
-          .json({
-            message: "company validation Successful",
-            token: accessToken,
-          });
+        return res.status(200).json({
+          message: "company validation Successful",
+          token: accessToken,
+        });
       }
     );
   } catch (err) {
@@ -249,11 +251,12 @@ const getAllcompanies = async (req, res) => {
 
   try {
     //pagination logic
-    const totalCompanies = await Company.countDocuments({ role: "company" });
+    const role = process.env.COMPANY_ROLE;
+    const totalCompanies = await Company.countDocuments({ role });
     const totalPages = Math.ceil(totalCompanies / limitNumber);
     const hasNextPage = pageNumber < totalPages;
     //Find companies with pagination
-    const companies = await Company.find({ role: "company" })
+    const companies = await Company.find({ role })
       .select(" companyName email phoneNumber rating")
       .skip(skip)
       .limit(limitNumber);
