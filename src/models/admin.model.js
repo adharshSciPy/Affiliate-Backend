@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+const defaultRole = process.env.ADMIN_ROLE
 const adminSchema = new Schema(
   {
     firstName: {
@@ -14,8 +15,7 @@ const adminSchema = new Schema(
     },
     role: {
       type: Number,
-      trim: true,
-      default: "admin",
+      default: defaultRole,
     },
     email: {
       type: String,

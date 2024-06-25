@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
+const defaultRole = process.env.CUSTOMER_ROLE
 const userSchema = new Schema({
     firstName: {
         type: String,
@@ -13,13 +14,12 @@ const userSchema = new Schema({
     },
     role: {
         type: Number,
+        default: defaultRole
     },
-
     officialId: {
         type: String,
         trim: true,
     },
-
     email: {
         type: String,
         trim: true,
@@ -33,7 +33,6 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'Password is required']
     },
-
     socialLinks: {
         type: [''],
     }
