@@ -1,6 +1,7 @@
 import express from "express"
 import cors from 'cors';
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv"
 import { limiter } from "./utils/apilimiter.js"
 
 //importing routes
@@ -14,6 +15,10 @@ import orderRoute from "./routers/order.router.js";
 import tokenRoute from "./routers/token.router.js";
 
 const app = express()
+
+dotenv.config({
+    path: './.env'
+})
 
 //middlewares
 app.use(express.json({ limit: "16kb" }))
