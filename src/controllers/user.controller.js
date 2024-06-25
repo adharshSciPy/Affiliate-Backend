@@ -98,13 +98,13 @@ const loginUser = async (req, res) => {
     const refreshToken = await user.generateRefreshToken();
 
     //store refresh token in cookie
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false, // when going to production change boolean to true
-      sameSite: "None",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/',
-    });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, 
+      secure: false,
+      sameSite: 'None', //cross-site cookie 
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    })
+
 
     return res
       .status(200)
@@ -120,8 +120,7 @@ const loginUser = async (req, res) => {
 // user/refresh
 // desc: To create new access token once it has expired (for all user roles -> Admin, Company and User)
 const refreshAccessToken = async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  console.log('token', refreshToken)
+  const { refreshToken } = req.cookies;
 
   if (!refreshToken) {
     return res.status(401).json({ message: "Unauthorized API request" });
@@ -138,19 +137,29 @@ const refreshAccessToken = async (req, res) => {
       }
 
       let user;
+      const role = Number(decoded.role)
 
       // Retrieve user based on role from decoded token
-      switch (decoded.role) {
-        case process.env.ADMIN_ROLE:
+      if (!role) {
+        return res.status(403).json({ message: "Forbidden. Invalid user role." });
+      }
+
+      const adminRole = Number(process.env.ADMIN_ROLE);
+      const customerRole = Number(process.env.CUSTOMER_ROLE);
+      const affiliaterRole = Number(process.env.AFFILIATER_ROLE);
+      const companyRole = Number(process.env.COMPANY_ROLE);
+
+      switch (role) {
+        case adminRole:
           user = await Admin.findOne({ _id: decoded.id });
           break;
-        case process.env.CUSTOMER_ROLE:
+        case customerRole:
           user = await User.findOne({ _id: decoded.id });
           break;
-        case process.env.AFFILIATER_ROLE:
+        case affiliaterRole:
           user = await User.findOne({ _id: decoded.id });
           break;
-        case process.env.COMPANY_ROLE:
+        case companyRole:
           user = await Company.findOne({ _id: decoded.id });
           break;
         default:
@@ -172,7 +181,6 @@ const refreshAccessToken = async (req, res) => {
     return res.status(500).json({ message: `Internal server error due to ${err.message}` });
   }
 };
-
 
 // @POST
 // user/logout
