@@ -141,7 +141,7 @@ const refreshAccessToken = async (req, res) => {
         const accessToken = await user.generateAccessToken();
         return res
           .status(200)
-          .json({ message: "User validation Successful", token: accessToken });
+          .json({ message: "User validation Successful", data: accessToken });
       }
     )
   }
