@@ -14,7 +14,7 @@ const registerUser = async (req, res) => {
   try {
     // sanitiasing inputs
     const isEmptyFields = [firstName, lastName, email, password, role].some(
-      (field) => field?.trim() === "" || field === undefined
+      (field) => field === "" || field === undefined
     );
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });
@@ -98,12 +98,13 @@ const loginUser = async (req, res) => {
     const refreshToken = await user.generateRefreshToken();
 
     //store refresh token in cookie
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false, // when going to production change boolean to true
-      sameSite: "None",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, 
+      secure: false,
+      sameSite: 'None', //cross-site cookie 
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    })
+
 
     return res
       .status(200)
@@ -121,51 +122,63 @@ const loginUser = async (req, res) => {
 const refreshAccessToken = async (req, res) => {
   const { refreshToken } = req.cookies;
 
+  if (!refreshToken) {
+    return res.status(401).json({ message: "Unauthorized API request" });
+  }
+
   try {
-    if (!refreshToken) {
-      return res.status(401).json({ message: "Unauthorized API request" });
-    }
-
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
-      async (err, decoded) => {
-        if (err) {
-          return res.status(403).json({ message: "Forbidden" });
+    // Verify refresh token
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, decoded) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          return res.status(403).json({ message: "Refresh token expired. Please log in again." });
         }
-
-        let user;
-        switch (decoded.role) {
-          case process.env.ADMIN_ROLE:
-            user = await Admin.findOne({ _id: decoded.id });
-            break;
-          case process.env.CUSTOMER_ROLE:
-            user = await User.findOne({ _id: decoded.id });
-            break;
-          case process.env.AFFILIATER_ROLE:
-            user = await User.findOne({ _id: decoded.id });
-            break;
-          case process.env.CUSTOMER_ROLE:
-            user = await Company.findOne({ _id: decoded.id });
-            break;
-          default:
-            return res.status(404).json({ message: "Invalid role" });
-        }
-
-        if (!user) {
-          return res.status(404).json({ message: "Cannot find user" });
-        }
-
-        const accessToken = await user.generateAccessToken();
-        return res
-          .status(200)
-          .json({ message: "User validation successful", data: accessToken });
+        return res.status(403).json({ message: "Forbidden. Invalid token." });
       }
-    );
+
+      let user;
+      const role = Number(decoded.role)
+
+      // Retrieve user based on role from decoded token
+      if (!role) {
+        return res.status(403).json({ message: "Forbidden. Invalid user role." });
+      }
+
+      const adminRole = Number(process.env.ADMIN_ROLE);
+      const customerRole = Number(process.env.CUSTOMER_ROLE);
+      const affiliaterRole = Number(process.env.AFFILIATER_ROLE);
+      const companyRole = Number(process.env.COMPANY_ROLE);
+
+      switch (role) {
+        case adminRole:
+          user = await Admin.findOne({ _id: decoded.id });
+          break;
+        case customerRole:
+          user = await User.findOne({ _id: decoded.id });
+          break;
+        case affiliaterRole:
+          user = await User.findOne({ _id: decoded.id });
+          break;
+        case companyRole:
+          user = await Company.findOne({ _id: decoded.id });
+          break;
+        default:
+          return res.status(404).json({ message: "Invalid role" });
+      }
+
+      if (!user) {
+        return res.status(404).json({ message: "Cannot find user" });
+      }
+
+      // Generate new access token
+      const accessToken = await user.generateAccessToken();
+
+      // Respond with success message and new access token
+      return res.status(200).json({ message: "User validation successful", data: accessToken });
+    });
+
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: `Internal server error due to ${err.message}` });
+    return res.status(500).json({ message: `Internal server error due to ${err.message}` });
   }
 };
 

@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+const defaultRole = process.env.COMPANY_ROLE
 const companySchema = new Schema(
   {
     companyName: {
@@ -10,8 +11,7 @@ const companySchema = new Schema(
     },
     role: {
       type: Number,
-      trim: true,
-      default: "company",
+      default: defaultRole
     },
     password: {
       type: String,
