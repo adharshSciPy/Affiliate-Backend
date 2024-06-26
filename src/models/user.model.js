@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
+const defaultRole = process.env.CUSTOMER_ROLE
 const userSchema = new Schema({
     firstName: {
         type: String,
@@ -13,15 +14,12 @@ const userSchema = new Schema({
     },
     role: {
         type: Number,
-        trim: true,
-        default: 'customer'
+        default: defaultRole
     },
-
     officialId: {
         type: String,
         trim: true,
     },
-
     email: {
         type: String,
         trim: true,
@@ -35,7 +33,6 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'Password is required']
     },
-
     socialLinks: {
         type: [''],
     }
@@ -66,9 +63,10 @@ userSchema.methods.generateAccessToken = async function () {
             role: this.role
         },
         process.env.ACCESS_TOKEN_SECRET,
-        {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-        }
+        { expiresIn: '7d' }
+        // {
+        //     expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        // }
     );
 }
 
@@ -81,9 +79,10 @@ userSchema.methods.generateRefreshToken = async function () {
             role: this.role
         },
         process.env.REFRESH_TOKEN_SECRET,
-        {
-            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-        }
+        { expiresIn: '7d' }
+        // {
+        //     expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        // }
     );
 }
 

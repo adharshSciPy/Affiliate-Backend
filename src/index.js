@@ -1,10 +1,5 @@
-import dotenv from "dotenv"
 import connectDb from './mongodb/index.js'
 import { app } from './app.js'
-
-dotenv.config({
-    path: './.env'
-})
 
 //--------db connection and server running--------
 connectDb().then(() => {
