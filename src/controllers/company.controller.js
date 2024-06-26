@@ -59,93 +59,6 @@ const registerCompany = async (req, res) => {
   }
 };
 
-// @POST
-// company/login
-// desc: Login api of company with credentials
-const loginCompany = async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    //sanitiasing inputs
-    const isEmptyFields = [email, password].some(
-      (field) => field?.trim() === "" || field === undefined
-    );
-    if (isEmptyFields) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-    //finding company and validation
-    const company = await Company.findOne({ email });
-    if (!company) {
-      return res.status(404).json({ message: "Company doesn't exist" });
-    }
-    //verify password
-    const isPasswordCorrect = await company.isPasswordCorrect(password);
-    if (!isPasswordCorrect) {
-      return res.status(401).json({ message: "Incorrect password" });
-    }
-    //generate access token
-    const accessToken = await company.generateAccessToken();
-
-    //generate refresh token
-    const refreshToken = await company.generateRefreshToken();
-
-    //store refresh token in cookie
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false, // when going to production change boolean to true
-      sameSite: "None",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    return res
-      .status(200)
-      .json({ message: "Company Validation Succesfull", token: accessToken });
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ message: `Internal Server due to ${err.message} ` });
-  }
-};
-
-// @GET
-// company/refresh
-// desc:To create new access token once it has expired
-const refreshCompanyAccessToken = async (req, res) => {
-  const { refreshToken } = req.cookies;
-
-  try {
-    if (!refreshToken) {
-      return res.status(401).json({ message: "Unauthorized api request" });
-    }
-
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
-      async (err, decoded) => {
-        if (err) {
-          return res.status(403).json({ message: "Forbidden" });
-        }
-
-        // find user
-        const company = await Company.findOne({ _id: decoded?.id });
-        if (!company) {
-          return res.status(404).json({ message: "Cannot find company" });
-        }
-
-        //generate new access token
-        const accessToken = await company.generateAccessToken();
-        return res.status(200).json({
-          message: "company validation Successful",
-          token: accessToken,
-        });
-      }
-    );
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ message: `Internal Server due to ${err.message}` });
-  }
-};
-
 // @PATCH
 // company/detials
 // desc: Company detials api of company
@@ -185,32 +98,6 @@ const companyMoreDetials = async (req, res) => {
     return res
       .status(500)
       .json({ message: `Internal Server due to ${err.message} ` });
-  }
-};
-
-// @POST
-// company/logout
-// desc: To logout a company and clear cookies
-const logoutCompany = async (req, res) => {
-  try {
-    const { refreshToken } = req.cookies;
-
-    if (!refreshToken) {
-      return res.status(204).json({ message: "Invalid Cookie" });
-    }
-
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: false, // Secure only in production
-      sameSite: "None",
-    });
-
-    return res.status(200).json({ message: "Logout successful" });
-  } catch (err) {
-    console.error("Error during logout:", err);
-    return res
-      .status(500)
-      .json({ message: `Internal Server Error: ${err.message}` });
   }
 };
 
@@ -281,10 +168,7 @@ const getAllcompanies = async (req, res) => {
 
 export {
   registerCompany,
-  loginCompany,
   companyMoreDetials,
   deleteCompany,
-  getAllcompanies,
-  refreshCompanyAccessToken,
-  logoutCompany,
+  getAllcompanies
 };
