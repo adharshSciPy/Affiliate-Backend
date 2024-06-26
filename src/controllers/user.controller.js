@@ -73,46 +73,45 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    //sanitiasing inputs
-    const isEmptyFields = [email, password].some(
-      (field) => field?.trim() === "" || field === undefined
-    );
-    if (isEmptyFields) {
+    // Sanitize and validate input
+    if (!email?.trim() || !password?.trim()) {
       return res.status(400).json({ message: "All fields are required" });
     }
-    //finding user and validating
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User doesn't exist" });
-    }
-    //verify password
 
+    // Find the user
+    const models = [User, Admin, Company];
+    let user = null;
+
+    for (const model of models) {
+      user = await model.findOne({ email });
+      if (user) break;
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "Email doesn't exist" });
+    }
+
+    // Verify password
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Incorrect password" });
     }
-    //generate access token
-    const accessToken = await user.generateAccessToken();
 
-    //generate refresh token
+    // Generate tokens
+    const accessToken = await user.generateAccessToken();
     const refreshToken = await user.generateRefreshToken();
 
-    //store refresh token in cookie
+    // Set refresh token in cookie
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true, 
-      secure: false,
-      sameSite: 'None', //cross-site cookie 
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    })
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
-
-    return res
-      .status(200)
-      .json({ message: "User validation Successful", token: accessToken });
+    return res.status(200).json({ message: "Validation Successful", token: accessToken });
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: `Internal Server due to ${err.message}` });
+    return res.status(500).json({ message: `Internal Server Error due to ${err.message}` });
   }
 };
 
