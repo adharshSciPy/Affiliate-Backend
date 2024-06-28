@@ -266,7 +266,7 @@ const getAllcompanies = async (req, res) => {
     if (companies.length === 0) {
       return res.status(404).json({ message: "No companies found" });
     }
-    //Respond with companies data and pagination ifo
+    //Respond with companies data and pagination info
     return res.status(200).json({
       message: "companies data found",
       data: { companies, hasNextPage, totalPages, currentPage: pageNumber },

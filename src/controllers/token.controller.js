@@ -43,13 +43,42 @@ const generateToken = async (req, res) => {
 // token/tokens
 // desc: Paginated api for getting all tokens
 const getAllTokens = async (req, res) => {
-    try {
+    const { page = 1,limit = 10} = req.query;
+    const pageNumber = parseInt(page,10);
+    const limitNumber = parseInt(limit,10);
 
+    //Skip logic
+    const skip = (pageNumber - 1) * limitNumber;
+
+
+    try {
+        //pagination logic
+        const totalTokens = await Token.countDocuments()
+        const totalPages = Math.ceil(totalTokens / limitNumber);
+        const hasNextPage = pageNumber < totalPages;
+        //Find tokens with pagination
+        const tokens = await Token.find()
+        .select(" token useCount usageTimes discount ")
+        .skip(skip)
+        .limit(limitNumber);
+
+        //check if tokens were found
+        if (tokens.length === 0) {
+            return res.status(404).json({ message: "No tokens found"});
+        }
+        //Respond with tokens data and pagination info
+        return res.status(200).json({
+            message: "Tokens data found",
+            data: { tokens, hasNextPage, totalTokens, currentPage: pageNumber},
+        });
     }
     catch (err) {
-        return res.status(500).json({ message: `Internal Server due to ${err.message}` });
+        //Handle any errors
+        return res.status(500)
+        .json({ message: `Internal Server due to ${err.message}` });
     }
-}
+};
+
 
 // @PATCH
 // token/tokens/:tokenId
@@ -99,4 +128,4 @@ const deleteToken = async (req, res) => {
     }
 }
 
-export { generateToken, updateTokenUseCount }
+export { generateToken, updateTokenUseCount, getAllTokens }
