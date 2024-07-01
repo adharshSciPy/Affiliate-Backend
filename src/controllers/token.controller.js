@@ -85,6 +85,20 @@ const getAllTokens = async (req, res) => {
 // desc: Update token usageTimes field 
 const updateTokenUsage = async (req, res) => {
     try {
+        const { tokenId } = req.params;
+        const token = await Token.findOne({ _id: tokenId })
+        if (!token) {
+            return res.status(404).json({ message: "Token doesn't exist"})
+        }
+        // Increment usage count
+        token.useCount++;
+        await token.save(); 
+
+
+        return res.status(200).json({
+            message: "Token usage incremented successfully",
+            data: token,
+        })
 
     }
     catch (err) {
@@ -120,12 +134,20 @@ const updateTokenUseCount = async (req, res) => {
 // token/tokens/:tokenId
 // desc: Delete a token
 const deleteToken = async (req, res) => {
+    const{ tokenId } = req.params;
     try {
-
+        // Find the token by Id
+        const token = await Token.findOne({ _id:tokenId});
+        if (!token) {
+            return res.status(404).json({ message: "token not found"});
+        }
+        //Delete the token
+        await Token.deleteOne({ _id:tokenId });
+        return res.status(200).json({ message: "Token successfully deleted"});
     }
     catch (err) {
         return res.status(500).json({ message: `Internal Server due to ${err.message}` });
     }
 }
 
-export { generateToken, updateTokenUseCount, getAllTokens }
+export { generateToken, updateTokenUseCount, getAllTokens, updateTokenUsage, deleteToken }
