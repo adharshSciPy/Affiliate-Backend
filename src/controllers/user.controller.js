@@ -194,7 +194,7 @@ const logoutUser = async (req, res) => {
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: false, // Secure only in production
+      secure: true, // Secure only in production
       sameSite: "None",
     });
 
