@@ -41,7 +41,7 @@ const registerCompany = async (req, res) => {
     }
 
     //company creation
-    const role = process.env.ADMIN_ROLE;
+    const role = process.env.COMPANY_ROLE;
     const company = await Company.create({ companyName, email, password, role });
     const createdCompany = await Company.findOne({ _id: company._id }).select(
       "-password"

@@ -83,6 +83,7 @@ const loginUser = async (req, res) => {
     let user = null;
 
     for (const model of models) {
+      console.log('model: ' + model)
       user = await model.findOne({ email });
       if (user) break;
     }
@@ -92,6 +93,7 @@ const loginUser = async (req, res) => {
     }
 
     // Verify password
+    console.log('user', user)
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Incorrect password" });
