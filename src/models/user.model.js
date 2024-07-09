@@ -35,6 +35,10 @@ const userSchema = new Schema({
     },
     socialLinks: {
         type: [''],
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
 },
     { timestamps: true })

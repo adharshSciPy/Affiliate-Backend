@@ -250,44 +250,72 @@ const getAllCustomers = async (req, res) => {
 };
 
 // @GET
-// user/affiliaters
+// user/affilitaers
 // desc: paginated api for getting all users with role affiliaters
-const getAllaffiliaters = async (req, res) => {
+const getAllVerifiedAffiliaters = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);
 
-  //skip logic
   const skip = (pageNumber - 1) * limitNumber;
 
   try {
-    //pagination logic
     const role = process.env.AFFILIATER_ROLE;
-    const totalAffiliaters = await User.countDocuments({ role });
+    const totalAffiliaters = await User.countDocuments({ role, isVerified: true });
+    console.log('total', totalAffiliaters)
     const totalPages = Math.ceil(totalAffiliaters / limitNumber);
     const hasNextPage = pageNumber < totalPages;
-    //Find affiliates with pagination
 
-    const affiliatiers = await User.find({ role })
+    const affiliaters = await User.find({ role, isVerified: true })
       .select("firstName lastName email phone")
       .skip(skip)
       .limit(limitNumber);
 
-    //check if affiliaters were found
-    if (affiliatiers.length === 0) {
-      return res.status(404).json({ message: "No affiliaters  found" });
+    if (affiliaters.length === 0) {
+      return res.status(404).json({ message: "No affiliaters found" });
     }
 
-    // Respond with affilaters data and pagination info
     return res.status(200).json({
-      message: "affiliaters data found",
-      data: { affiliatiers, hasNextPage, totalPages, currentPage: pageNumber },
+      message: "Affiliaters data found",
+      data: { affiliaters, hasNextPage, totalPages, currentPage: pageNumber },
     });
   } catch (err) {
-    // Handle any errors
-    return res
-      .status(500)
-      .json({ message: `Internal server error due to: ${err.message}` });
+    return res.status(500).json({ message: `Internal server error: ${err.message}` });
+  }
+};
+
+
+// @GET
+// user/affiliaters/not-verified
+// desc: paginated api for getting all users with role affiliaters
+const getAllNonVerifiedAffiliaters = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  try {
+    const role = process.env.AFFILIATER_ROLE;
+    const totalAffiliaters = await User.countDocuments({ role, isVerified: false });
+    const totalPages = Math.ceil(totalAffiliaters / limitNumber);
+    const hasNextPage = pageNumber < totalPages;
+
+    const affiliaters = await User.find({ role, isVerified: false })
+      .select("firstName lastName email phone")
+      .skip(skip)
+      .limit(limitNumber);
+
+    if (affiliaters.length === 0) {
+      return res.status(404).json({ message: "No non-verified affiliaters found" });
+    }
+
+    return res.status(200).json({
+      message: "Non-verified affiliaters data found",
+      data: { affiliaters, hasNextPage, totalPages, currentPage: pageNumber },
+    });
+  } catch (err) {
+    return res.status(500).json({ message: `Internal server error: ${err.message}` });
   }
 };
 
@@ -297,5 +325,6 @@ export {
   refreshAccessToken,
   logoutUser,
   getAllCustomers,
-  getAllaffiliaters,
+  getAllVerifiedAffiliaters,
+  getAllNonVerifiedAffiliaters
 };
