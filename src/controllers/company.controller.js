@@ -319,6 +319,27 @@ const getAllNewCompanies = async (req, res) => {
   }
 };
 
+//@PATCH
+//Convert the company into verified 
+const verifyCompany = async (req, res) => {
+  const { companyId } = req.params;
+  
+  if (!companyId) {
+    const Company = Company.findOne(companyId)
+    return res.status(400).json({ message: "Company not found" })
+  }
+  try {
+    const CompanyVerified = await Company.findByIdAndUpdate(
+      companyId,
+      { isVerified: true }
+    )
+    return res.status(200).json({ message: " verify company", data: { CompanyVerified } })
+
+  } catch (error) {
+    return res.status(404).json({ message: `Internal server error due to: ${error.message}` })
+  }
+}
+
 export {
   registerCompany,
   loginCompany,
@@ -328,4 +349,5 @@ export {
   getAllNewCompanies,
   refreshCompanyAccessToken,
   logoutCompany,
+  verifyCompany
 };
