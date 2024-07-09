@@ -25,32 +25,36 @@ const companySchema = new Schema(
     phoneNumber: {
       type: Number,
       trim: true,
-      
+
     },
     address: {
       type: String,
-    
+
     },
     pincode: {
       type: Number,
       trim: true,
-   
+
     },
     location: {
       type: String,
-     
+
     },
     gstNumber: {
       type: String,
-     
+
     },
     licenseNumber: {
       type: String,
-    
+
     },
     rating: {
       type: Number,
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    }
   },
   { timestamps: true }
 );
@@ -86,15 +90,15 @@ companySchema.methods.generateAccessToken = async function () {
 // generate refresh token
 companySchema.methods.generateRefreshToken = async function () {
   return jwt.sign(
-      {
-          id: this._id,
-          email: this.email,
-          role: this.role
-      },
-      process.env.REFRESH_TOKEN_SECRET,
-      {
-          expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-      }
+    {
+      id: this._id,
+      email: this.email,
+      role: this.role
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+    }
   );
 }
 

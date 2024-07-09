@@ -242,7 +242,7 @@ const deleteCompany = async (req, res) => {
 // @GET
 // user/companies
 // desc: paginated api for getting all users with  role companies
-const getAllcompanies = async (req, res) => {
+const getAllVerifiedCompanies = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);
@@ -253,17 +253,57 @@ const getAllcompanies = async (req, res) => {
   try {
     //pagination logic
     const role = process.env.COMPANY_ROLE;
-    const totalCompanies = await Company.countDocuments({ role });
+    const totalCompanies = await Company.countDocuments({ isVerified: true });
     const totalPages = Math.ceil(totalCompanies / limitNumber);
     const hasNextPage = pageNumber < totalPages;
     //Find companies with pagination
-    const companies = await Company.find({ role })
+    const companies = await Company.find({ isVerified: true })
       .select(" companyName email phoneNumber rating")
       .skip(skip)
       .limit(limitNumber);
 
     //check if companies were found
-    if (companies.length === 0) {
+    if (companies.length === 0 || !companies) {
+      return res.status(404).json({ message: "No companies found" });
+    }
+    //Respond with companies data and pagination info
+    return res.status(200).json({
+      message: "companies data found",
+      data: { companies, hasNextPage, totalPages, currentPage: pageNumber },
+    });
+  } catch (err) {
+    //Handle any errors
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to: ${err.message}` });
+  }
+};
+
+// @GET
+// user/companies/not-verified
+// desc: paginated api for getting all users with  role companies
+const getAllNewCompanies = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
+
+  // skip logic
+  const skip = (pageNumber - 1) * limitNumber;
+
+  try {
+    //pagination logic
+    const role = process.env.COMPANY_ROLE;
+    const totalCompanies = await Company.countDocuments({ isVerified: false });
+    const totalPages = Math.ceil(totalCompanies / limitNumber);
+    const hasNextPage = pageNumber < totalPages;
+    //Find companies with pagination
+    const companies = await Company.find({ isVerified: false })
+      .select(" companyName email phoneNumber rating")
+      .skip(skip)
+      .limit(limitNumber);
+
+    //check if companies were found
+    if (companies.length === 0 || !companies) {
       return res.status(404).json({ message: "No companies found" });
     }
     //Respond with companies data and pagination info
@@ -284,7 +324,8 @@ export {
   loginCompany,
   companyMoreDetials,
   deleteCompany,
-  getAllcompanies,
+  getAllVerifiedCompanies,
+  getAllNewCompanies,
   refreshCompanyAccessToken,
   logoutCompany,
 };

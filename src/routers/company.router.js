@@ -4,7 +4,8 @@ import {
   loginCompany,
   companyMoreDetials,
   deleteCompany,
-  getAllcompanies,
+  getAllVerifiedCompanies,
+  getAllNewCompanies,
   refreshCompanyAccessToken,
   logoutCompany,
 } from "../controllers/company.controller.js";
@@ -17,7 +18,8 @@ companyRoute.route("/refresh").get( refreshCompanyAccessToken);
 companyRoute.route("/logout").post(logoutCompany);
 companyRoute.route("/companies/:companyId").patch(companyMoreDetials);
 companyRoute.route("/companies/:companyId").delete(deleteCompany);
-companyRoute.route('/companies').get(getAllcompanies)
+companyRoute.route('/companies').get(getAllVerifiedCompanies)
+companyRoute.route('/companies/not-verified').get(getAllNewCompanies)
 
 
 export default companyRoute;
