@@ -323,22 +323,21 @@ const getAllNewCompanies = async (req, res) => {
 //Convert the company into verified 
 const verifyCompany = async (req, res) => {
   const { companyId } = req.params;
-  
-  if (!companyId) {
-    const Company = Company.findOne(companyId)
-    return res.status(400).json({ message: "Company not found" })
-  }
   try {
-    const CompanyVerified = await Company.findByIdAndUpdate(
-      companyId,
-      { isVerified: true }
-    )
-    return res.status(200).json({ message: " verify company", data: { CompanyVerified } })
+    const company = await Company.findById(companyId);
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
 
-  } catch (error) {
-    return res.status(404).json({ message: `Internal server error due to: ${error.message}` })
+    company.isVerified = true;
+    await company.save();
+
+    return res.status(200).json({ message: "Company Verified Successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
   }
-}
+};
+
 
 export {
   registerCompany,
