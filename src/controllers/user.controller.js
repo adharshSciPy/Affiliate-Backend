@@ -349,6 +349,26 @@ const verifyAffiliater = async (req, res) => {
   }
 }
 
+// @PATCH
+//user/blockAll/:userId/manage-block
+
+const blockAll = async (req, res) => {
+  const { id } = req.params;
+  const { isBlocked } = req.body;
+  try {
+    const allUser = await User.findById(id)
+    if (!allUser) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    allUser.isBlocked = isBlocked;
+    await allUser.save();
+    return res.status(200).json({ message: "Blocked Sucessfully" })
+  } catch (error) {
+    return res.status(500).json({ message: `Internal server error due to: ${error.message}` });
+  }
+}
+
 export {
   registerUser,
   loginUser,
@@ -357,5 +377,6 @@ export {
   getAllCustomers,
   getAllVerifiedAffiliaters,
   getAllNonVerifiedAffiliaters,
-  verifyAffiliater
+  verifyAffiliater,
+  blockAll
 };
