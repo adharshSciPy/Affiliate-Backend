@@ -240,7 +240,7 @@ const deleteCompany = async (req, res) => {
 };
 
 // @GET
-// user/companies
+// company/companies
 // desc: paginated api for getting all users with  role companies
 const getAllVerifiedCompanies = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
@@ -258,7 +258,7 @@ const getAllVerifiedCompanies = async (req, res) => {
     const hasNextPage = pageNumber < totalPages;
     //Find companies with pagination
     const companies = await Company.find({ isVerified: true })
-      .select(" companyName email phoneNumber rating")
+      .select(" companyName email phoneNumber rating isBlocked")
       .skip(skip)
       .limit(limitNumber);
 
@@ -280,7 +280,7 @@ const getAllVerifiedCompanies = async (req, res) => {
 };
 
 // @GET
-// user/companies/not-verified
+// company/companies/not-verified
 // desc: paginated api for getting all users with  role companies
 const getAllNewCompanies = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
@@ -319,8 +319,9 @@ const getAllNewCompanies = async (req, res) => {
   }
 };
 
-//@PATCH
-//Convert the company into verified 
+// @PATCH
+// company/companies/:companyId/verify
+// desc: Convert the company into verified 
 const verifyCompany = async (req, res) => {
   const { companyId } = req.params;
   try {
@@ -338,6 +339,26 @@ const verifyCompany = async (req, res) => {
   }
 };
 
+// @PATCH
+// company/companies/:companyId/manage-block
+const blockCompany = async (req, res) => {
+  const { companyId } = req.params;
+  const { isBlocked } = req.body;
+  try {
+    const company = await Company.findById(companyId);
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    company.isBlocked = isBlocked;
+    await company.save();
+
+    return res.status(200).json({ message: "Company Blocked Successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
+  }
+};
+
 
 export {
   registerCompany,
@@ -348,5 +369,6 @@ export {
   getAllNewCompanies,
   refreshCompanyAccessToken,
   logoutCompany,
-  verifyCompany
+  verifyCompany,
+  blockCompany
 };
