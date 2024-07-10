@@ -262,7 +262,6 @@ const getAllVerifiedAffiliaters = async (req, res) => {
   try {
     const role = process.env.AFFILIATER_ROLE;
     const totalAffiliaters = await User.countDocuments({ role, isVerified: true });
-    console.log('total', totalAffiliaters)
     const totalPages = Math.ceil(totalAffiliaters / limitNumber);
     const hasNextPage = pageNumber < totalPages;
 
@@ -319,6 +318,32 @@ const getAllNonVerifiedAffiliaters = async (req, res) => {
   }
 };
 
+const AffiliaterVerify = async (req, res) => {
+  const { affiliaterId } = req.params;
+
+  try {
+    const Affiliater = await User.findById(affiliaterId);
+    if (!Affiliater) {
+      return res.status(404).json({ message: "Affiliater not found" })
+    }
+
+    if (Affiliater.role == process.env.AFFILIATER_ROLE) {
+      const Verified = await User.findByIdAndUpdate(
+        affiliaterId,
+        { isVerified: true },
+        { new: true }
+      );
+      return res.status(200).json({ message: "Affiliater Verified Successfully", data: Verified })
+    }
+    else {
+      return res.status(403).json({ message: "Unauthorized found" })
+    }
+
+  } catch (error) {
+    return res.status(500).json({ message: `Internal server error: ${error.message}` });
+  }
+}
+
 export {
   registerUser,
   loginUser,
@@ -326,5 +351,6 @@ export {
   logoutUser,
   getAllCustomers,
   getAllVerifiedAffiliaters,
-  getAllNonVerifiedAffiliaters
+  getAllNonVerifiedAffiliaters,
+  AffiliaterVerify
 };
