@@ -319,7 +319,6 @@ const getAllNonVerifiedAffiliaters = async (req, res) => {
 };
 
 
-
 // @PATCH
 // user/affiliaters/:affiliaterId/verify
 // desc: to verify an affiliater
@@ -338,7 +337,7 @@ const verifyAffiliater = async (req, res) => {
         { isVerified: true },
         { new: true }
       );
-      return res.status(200).json({ message: "Affiliater Verified Successfully", data: Verified })
+      return res.status(200).json({ message: "Affiliater Verified Successfully" })
     }
     else {
       return res.status(403).json({ message: "Unauthorized found" })
@@ -350,13 +349,13 @@ const verifyAffiliater = async (req, res) => {
 }
 
 // @PATCH
-//user/blockAll/:userId/manage-block
-
-const blockAll = async (req, res) => {
-  const { id } = req.params;
+// user/users/:userId/manage-block
+// desc: To manage block of all users
+const manageUsersBlock = async (req, res) => {
+  const { userId } = req.params;
   const { isBlocked } = req.body;
   try {
-    const allUser = await User.findById(id)
+    const allUser = await User.findById(userId)
     if (!allUser) {
       return res.status(404).json({ message: "User not found" })
     }
@@ -378,5 +377,5 @@ export {
   getAllVerifiedAffiliaters,
   getAllNonVerifiedAffiliaters,
   verifyAffiliater,
-  blockAll
+  manageUsersBlock
 };

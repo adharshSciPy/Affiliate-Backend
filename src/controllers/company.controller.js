@@ -341,7 +341,7 @@ const verifyCompany = async (req, res) => {
 
 // @PATCH
 // company/companies/:companyId/manage-block
-const blockCompany = async (req, res) => {
+const manageCompanyBlock = async (req, res) => {
   const { companyId } = req.params;
   const { isBlocked } = req.body;
   try {
@@ -370,5 +370,5 @@ export {
   refreshCompanyAccessToken,
   logoutCompany,
   verifyCompany,
-  blockCompany
+  manageCompanyBlock
 };
