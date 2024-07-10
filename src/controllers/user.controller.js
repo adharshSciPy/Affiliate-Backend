@@ -318,7 +318,12 @@ const getAllNonVerifiedAffiliaters = async (req, res) => {
   }
 };
 
-const AffiliaterVerify = async (req, res) => {
+
+
+// @PATCH
+// user/affiliaters/:affiliaterId/verify
+// desc: to verify an affiliater
+const verifyAffiliater = async (req, res) => {
   const { affiliaterId } = req.params;
 
   try {
@@ -352,5 +357,5 @@ export {
   getAllCustomers,
   getAllVerifiedAffiliaters,
   getAllNonVerifiedAffiliaters,
-  AffiliaterVerify
+  verifyAffiliater
 };
