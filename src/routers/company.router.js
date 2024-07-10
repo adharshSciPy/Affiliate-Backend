@@ -8,7 +8,8 @@ import {
   getAllNewCompanies,
   refreshCompanyAccessToken,
   logoutCompany,
-  verifyCompany
+  verifyCompany,
+  blockCompany
 } from "../controllers/company.controller.js";
 
 const companyRoute = Router();
@@ -22,6 +23,7 @@ companyRoute.route("/companies/:companyId").delete(deleteCompany);
 companyRoute.route('/companies').get(getAllVerifiedCompanies)
 companyRoute.route('/companies/not-verified').get(getAllNewCompanies)
 companyRoute.route('/companies/:companyId/verify').patch(verifyCompany)
+companyRoute.route('/companies/:companyId/manage-block').patch(blockCompany)
 
 
 export default companyRoute;
