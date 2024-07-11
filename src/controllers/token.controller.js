@@ -22,8 +22,9 @@ const generateToken = async (req, res) => {
         if (!admin) {
             return res.status(404).json({ message: 'Admin not found' });
         }
+        
         if (existingToken){
-            return res.status(409).json({ message: 'Token has already been used' });
+            return res.status(409).json({ message: 'Token has already created for this user' });
         }
 
         // Create a new token
@@ -37,7 +38,7 @@ const generateToken = async (req, res) => {
         // Generate and save unique token
         await token.generateAndSaveUniqueToken(user.firstName, user.lastName);
 
-        return res.status(201).json({ message: 'Token created successfully', data: token });
+        return res.status(201).json({ message: 'Token created successfully' });
     }
     catch (err) {
         return res.status(500).json({ message: `Internal Server due to ${err.message}` });
@@ -74,7 +75,7 @@ const getAllTokens = async (req, res) => {
         //Respond with tokens data and pagination info
         return res.status(200).json({
             message: "Tokens data found",
-            data: { tokens, hasNextPage, totalTokens, currentPage: pageNumber },
+            data: { tokens, hasNextPage, totalPages, currentPage: pageNumber },
         });
     }
     catch (err) {
@@ -83,7 +84,6 @@ const getAllTokens = async (req, res) => {
             .json({ message: `Internal Server due to ${err.message}` });
     }
 };
-
 
 // @PATCH
 // token/tokens/:tokenId

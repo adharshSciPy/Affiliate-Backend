@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import { Company } from "../models/company.model.js";
 import { Admin } from "../models/admin.model.js";
 
+
 import jwt from "jsonwebtoken";
 import { passwordValidator } from "../utils/passwordValidator.js";
 
@@ -179,16 +180,16 @@ const refreshAccessToken = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ message: `Internal server error due to ${err.message}` });
   }
-  
+
 };
 // @get
 // userById
 // desc:find only one user data at a time
 const getUserById = async (req, res) => {
-  const {userId}  = req.params;
+  const { userId } = req.params;
   try {
-    const userData = await User.findOne({_id:userId});
-  
+    const userData = await User.findOne({ _id: userId });
+
     if (!userData) {
       return res.status(404).json({ message: "Cannot find user" });
     }
@@ -197,12 +198,12 @@ const getUserById = async (req, res) => {
       LastName: userData.lastName,
       email: userData.email,
       role: userData.role,
-      officialId:userData.officialId,
-      phoneNumber:userData.phoneNumber,
-      socialLinks:userData.socialLinks
+      officialId: userData.officialId,
+      phoneNumber: userData.phoneNumber,
+      socialLinks: userData.socialLinks
 
     };
-   
+
     res.status(200).json({ message: "User data found", data });
   } catch (err) {
     return res.status(500).json({ message: `Internal server error due to ${err.message}` });
@@ -288,15 +289,46 @@ const getAllVerifiedAffiliaters = async (req, res) => {
   const skip = (pageNumber - 1) * limitNumber;
 
   try {
-    const role = process.env.AFFILIATER_ROLE;
+    const role = parseInt(process.env.AFFILIATER_ROLE);
     const totalAffiliaters = await User.countDocuments({ role, isVerified: true });
     const totalPages = Math.ceil(totalAffiliaters / limitNumber);
     const hasNextPage = pageNumber < totalPages;
 
-    const affiliaters = await User.find({ role, isVerified: true })
-      .select("firstName lastName email phone")
-      .skip(skip)
-      .limit(limitNumber);
+    const affiliaters = await User.aggregate([
+      {
+        $match: {
+          role: role,
+          isVerified: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'tokens', 
+          localField: '_id', 
+          foreignField: 'userId',  
+          as: 'tokens' 
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          firstName: 1,
+          lastName: 1,
+          email: 1,
+          phoneNumber: 1,
+          tokens: {
+            token: 1,
+            _id: 1,
+          }
+        }
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limitNumber
+      }
+    ])
 
     if (affiliaters.length === 0) {
       return res.status(404).json({ message: "No affiliaters found" });
