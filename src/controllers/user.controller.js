@@ -326,23 +326,23 @@ const verifyAffiliater = async (req, res) => {
   const { affiliaterId } = req.params;
 
   try {
-    const Affiliater = await User.findById(affiliaterId);
-    if (!Affiliater) {
+    const verifyAffiliater = await User.findById(affiliaterId);
+    if (!verifyAffiliater) {
       return res.status(404).json({ message: "Affiliater not found" })
     }
 
-    if (Affiliater.role == process.env.AFFILIATER_ROLE) {
-      const Verified = await User.findByIdAndUpdate(
+    if (verifyAffiliater.role !== (parseInt(process.env.AFFILIATER_ROLE))) {
+      return res.status(400).json({ message: "Unauthorized User" })
+    }
+
+    if (verifyAffiliater.role === (parseInt(process.env.AFFILIATER_ROLE))) {
+      const affiliaterVerified = await User.findByIdAndUpdate(
         affiliaterId,
         { isVerified: true },
         { new: true }
       );
       return res.status(200).json({ message: "Affiliater Verified Successfully" })
     }
-    else {
-      return res.status(403).json({ message: "Unauthorized found" })
-    }
-
   } catch (error) {
     return res.status(500).json({ message: `Internal server error: ${error.message}` });
   }
