@@ -12,6 +12,6 @@ userRoute.route('/affiliaters').get(getAllVerifiedAffiliaters)
 userRoute.route('/affiliaters/not-verified').get(getAllNonVerifiedAffiliaters)
 userRoute.route('/affiliaters/:affiliaterId/verify').patch(verifyAffiliater)
 userRoute.route('/users/:userId/manage-block').patch(manageUsersBlock)
-userRoute.route('/user/:userId').get(getUserById)
+userRoute.route('/users/:userId').get(getUserById)
 
 export default userRoute

@@ -195,7 +195,7 @@ const getUserById = async (req, res) => {
     }
     const data = {
       firstName: userData.firstName,
-      LastName: userData.lastName,
+      lastName: userData.lastName,
       email: userData.email,
       role: userData.role,
       officialId: userData.officialId,
