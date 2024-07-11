@@ -3,7 +3,7 @@ import { generateToken, updateTokenUseCount ,getAllTokens, updateTokenUsage, del
 
 const tokenRoute = Router()
 
-tokenRoute.route('/tokens').post(generateToken)
+tokenRoute.route('/tokens/:userId/:adminId').post(generateToken)
 tokenRoute.route('/tokens/:tokenId').patch(updateTokenUseCount)
 tokenRoute.route('/tokens/:tokenId').patch(updateTokenUsage)
 tokenRoute.route('/tokens').get(getAllTokens )

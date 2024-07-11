@@ -7,7 +7,8 @@ import { Admin } from "../models/admin.model.js"
 // desc: Create a new token by admin and asign to an affiliater
 const generateToken = async (req, res) => {
     try {
-        const { userId, adminId, useCount, discount } = req.body;
+        const { userId, adminId } = req.params;
+        const { useCount, discount } = req.body;
 
         // Validate if user and admin exist
         const user = await User.findById(userId);
@@ -43,9 +44,9 @@ const generateToken = async (req, res) => {
 // token/tokens
 // desc: Paginated api for getting all tokens
 const getAllTokens = async (req, res) => {
-    const { page = 1,limit = 10} = req.query;
-    const pageNumber = parseInt(page,10);
-    const limitNumber = parseInt(limit,10);
+    const { page = 1, limit = 10 } = req.query;
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
 
     //Skip logic
     const skip = (pageNumber - 1) * limitNumber;
@@ -58,24 +59,24 @@ const getAllTokens = async (req, res) => {
         const hasNextPage = pageNumber < totalPages;
         //Find tokens with pagination
         const tokens = await Token.find()
-        .select(" token useCount usageTimes discount ")
-        .skip(skip)
-        .limit(limitNumber);
+            .select(" token useCount usageTimes discount ")
+            .skip(skip)
+            .limit(limitNumber);
 
         //check if tokens were found
         if (tokens.length === 0) {
-            return res.status(404).json({ message: "No tokens found"});
+            return res.status(404).json({ message: "No tokens found" });
         }
         //Respond with tokens data and pagination info
         return res.status(200).json({
             message: "Tokens data found",
-            data: { tokens, hasNextPage, totalTokens, currentPage: pageNumber},
+            data: { tokens, hasNextPage, totalTokens, currentPage: pageNumber },
         });
     }
     catch (err) {
         //Handle any errors
         return res.status(500)
-        .json({ message: `Internal Server due to ${err.message}` });
+            .json({ message: `Internal Server due to ${err.message}` });
     }
 };
 
@@ -88,11 +89,11 @@ const updateTokenUsage = async (req, res) => {
         const { tokenId } = req.params;
         const token = await Token.findOne({ _id: tokenId })
         if (!token) {
-            return res.status(404).json({ message: "Token doesn't exist"})
+            return res.status(404).json({ message: "Token doesn't exist" })
         }
         // Increment usage count
         token.useCount++;
-        await token.save(); 
+        await token.save();
 
 
         return res.status(200).json({
@@ -126,7 +127,7 @@ const updateTokenUseCount = async (req, res) => {
         });
     }
     catch (err) {
-        return res.status(500).json({ message:`Internal Server due to ${err.message}` });
+        return res.status(500).json({ message: `Internal Server due to ${err.message}` });
     }
 }
 
@@ -134,16 +135,16 @@ const updateTokenUseCount = async (req, res) => {
 // token/tokens/:tokenId
 // desc: Delete a token
 const deleteToken = async (req, res) => {
-    const{ tokenId } = req.params;
+    const { tokenId } = req.params;
     try {
         // Find the token by Id
-        const token = await Token.findOne({ _id:tokenId});
+        const token = await Token.findOne({ _id: tokenId });
         if (!token) {
-            return res.status(404).json({ message: "token not found"});
+            return res.status(404).json({ message: "token not found" });
         }
         //Delete the token
-        await Token.deleteOne({ _id:tokenId });
-        return res.status(200).json({ message: "Token successfully deleted"});
+        await Token.deleteOne({ _id: tokenId });
+        return res.status(200).json({ message: "Token successfully deleted" });
     }
     catch (err) {
         return res.status(500).json({ message: `Internal Server due to ${err.message}` });
