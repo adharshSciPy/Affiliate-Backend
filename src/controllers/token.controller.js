@@ -13,6 +13,7 @@ const generateToken = async (req, res) => {
         // Validate if user and admin exist
         const user = await User.findById(userId);
         const admin = await Admin.findById(adminId);
+        const existingToken= await Token.findOne({userId:userId})
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -20,6 +21,9 @@ const generateToken = async (req, res) => {
 
         if (!admin) {
             return res.status(404).json({ message: 'Admin not found' });
+        }
+        if (existingToken){
+            return res.status(409).json({ message: 'Token has already been used' });
         }
 
         // Create a new token
