@@ -83,6 +83,8 @@ companySchema.methods.generateAccessToken = async function () {
       companyName: this.companyName,
       email: this.email,
       role: this.role,
+      isVerified: this.isVerified,
+      isBlocked: this.isBlocked
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -97,7 +99,9 @@ companySchema.methods.generateRefreshToken = async function () {
     {
       id: this._id,
       email: this.email,
-      role: this.role
+      role: this.role,
+      isVerified: this.isVerified,
+      isBlocked: this.isBlocked
     },
     process.env.REFRESH_TOKEN_SECRET,
     {

@@ -68,13 +68,14 @@ userSchema.methods.generateAccessToken = async function () {
             firstName: this.firstName,
             lastName: this.lastName,
             email: this.email,
-            role: this.role
+            role: this.role,
+            isVerified: this.isVerified,
+            isBlocked: this.isBlocked
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: '7d' }
-        // {
-        //     expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-        // }
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
     );
 }
 
@@ -84,13 +85,14 @@ userSchema.methods.generateRefreshToken = async function () {
         {
             id: this._id,
             email: this.email,
-            role: this.role
+            role: this.role,
+            isVerified: this.isVerified,
+            isBlocked: this.isBlocked
         },
         process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: '7d' }
-        // {
-        //     expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-        // }
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
     );
 }
 
