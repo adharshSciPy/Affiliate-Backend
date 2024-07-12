@@ -93,7 +93,7 @@ const deleteService = async (req, res) => {
 // @PATCH
 // service/detials
 // desc: Service detials api for serive
-const UpadateServiceDetials = async (req, res) => {
+const upadateServiceDetials = async (req, res) => {
   const { title, description, duration, price, discount, category, tags } =
     req.body;
   const { serviceId } = req.params;
@@ -131,8 +131,6 @@ const getAllServices = async (req, res) => {
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);
 
-  console.log(page, limit);
-
   // skip logic
   const skip = (pageNumber - 1) * limitNumber;
 
@@ -156,7 +154,7 @@ const getAllServices = async (req, res) => {
     // Respond with services data and pagination info
     return res.status(200).json({
       message: "Service data found",
-      data: { services, hasNextPage, totalPages, currentPage: pageNumber },
+      data: { services, hasNextPage, total: totalServices, currentPage: pageNumber },
     });
   } catch (err) {
     // Handle any errors
@@ -166,4 +164,4 @@ const getAllServices = async (req, res) => {
   }
 };
 
-export { postService, deleteService, UpadateServiceDetials, getAllServices };
+export { postService, deleteService, upadateServiceDetials, getAllServices };

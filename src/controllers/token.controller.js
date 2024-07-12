@@ -75,7 +75,7 @@ const getAllTokens = async (req, res) => {
         //Respond with tokens data and pagination info
         return res.status(200).json({
             message: "Tokens data found",
-            data: { tokens, hasNextPage, totalPages, currentPage: pageNumber },
+            data: { tokens, hasNextPage, total: totalTokens, currentPage: pageNumber },
         });
     }
     catch (err) {

@@ -269,7 +269,7 @@ const getAllCustomers = async (req, res) => {
     // Respond with customer data and pagination info
     return res.status(200).json({
       message: "Customer data found",
-      data: { customers, hasNextPage, totalPages, currentPage: pageNumber },
+      data: { customers, hasNextPage, total: totalCustomers, currentPage: pageNumber },
     });
   } catch (err) {
     // Handle any errors
@@ -337,7 +337,7 @@ const getAllVerifiedAffiliaters = async (req, res) => {
 
     return res.status(200).json({
       message: "Affiliaters data found",
-      data: { affiliaters, hasNextPage, totalPages, currentPage: pageNumber },
+      data: { affiliaters, hasNextPage, total: totalAffiliaters, currentPage: pageNumber },
     });
   } catch (err) {
     return res.status(500).json({ message: `Internal server error: ${err.message}` });
@@ -372,7 +372,7 @@ const getAllNonVerifiedAffiliaters = async (req, res) => {
 
     return res.status(200).json({
       message: "Non-verified affiliaters data found",
-      data: { affiliaters, hasNextPage, totalPages, currentPage: pageNumber },
+      data: { affiliaters, hasNextPage, total: totalAffiliaters, currentPage: pageNumber },
     });
   } catch (err) {
     return res.status(500).json({ message: `Internal server error: ${err.message}` });
