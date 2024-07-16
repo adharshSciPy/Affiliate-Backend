@@ -158,6 +158,15 @@ const companyMoreDetials = async (req, res) => {
     location,
     gstNumber,
     licenseNumber,
+    firstName,
+    lastName,
+    DOB,
+    Gender,
+    nationality,
+    emailAddress,
+    website,
+    Address
+
   } = req.body;
   const { companyId } = req.params;
   try {
@@ -167,14 +176,15 @@ const companyMoreDetials = async (req, res) => {
     if (!company) {
       return res.status(404).json({ message: "Company doesn't exist" });
     }
-    company.companyName = companyName;
+    company.firstName = firstName;
+    company.lastName = lastName;
+    company.DOB = DOB;
+    company.Gender = Gender;
+    company.nationality = nationality;
+    company.emailAddress = emailAddress;
     company.phoneNumber = phoneNumber;
-    company.address = address;
-    company.pincode = pincode;
-    company.location = location;
-    company.gstNumber = gstNumber;
-    company.licenseNumber = licenseNumber;
-
+    company.website = website;
+    company.Address = Address;
     await company.save();
 
     return res.status(200).json({

@@ -24,7 +24,6 @@ const companySchema = new Schema(
     },
     phoneNumber: {
       type: Number,
-      trim: true,
 
     },
     address: {
@@ -58,7 +57,41 @@ const companySchema = new Schema(
     isBlocked: {
       type: Boolean,
       default: false,
-    }
+    },
+    firstName: {
+      type: String,
+      required: [true, "First Name is required"],
+    },
+    lastName: {
+      type: String,
+      required: [true, "Last Name is required"],
+    },
+    DOB: {
+      type: String,
+      required: [true, "Date of Birth is required"]
+    },
+    Gender: {
+      type: String,
+      required: [true, "Gender is required"],
+    },
+    nationality: {
+      type: String,
+      required: [true, "Nationality is required"],
+    },
+    emailAddress: {
+      type: String,
+      required: [true, "Personal Email is required"],
+      unique: true,
+    },
+    website: {
+      type: String,
+      required: [true, "Website is required"],
+    },
+    Address: {
+      type: String,
+      required: [true, "Address is required"],
+    },
+
   },
   { timestamps: true }
 );
