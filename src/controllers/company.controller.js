@@ -380,7 +380,6 @@ const getPersonalInfo = async (req, res) => {
       return res.status(400).json({ message: "Company not found" });
     }
     const getresult = await Company.findById(companyId)
-      .select("firstName lastName DOB Gender phoneNumber emailAddress website Address nationality")
     return res.status(200).json({ message: "Personal data's found", data: getresult })
   } catch (error) {
     return res.status(500).json({ message: `Internal server error due to: ${error.message}` });
