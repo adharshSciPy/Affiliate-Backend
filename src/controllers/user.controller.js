@@ -304,10 +304,10 @@ const getAllVerifiedAffiliaters = async (req, res) => {
       },
       {
         $lookup: {
-          from: 'tokens', 
-          localField: '_id', 
-          foreignField: 'userId',  
-          as: 'tokens' 
+          from: 'tokens',
+          localField: '_id',
+          foreignField: 'userId',
+          as: 'tokens'
         }
       },
       {
@@ -429,6 +429,37 @@ const manageUsersBlock = async (req, res) => {
   }
 }
 
+//@PATCH
+//user/users/:userId/update-social-links
+//desc : To manage social media links
+
+const updateSocialLinks = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { socialLinks } = req.body;
+    if (!Array.isArray(socialLinks)) {
+      throw new Error('newLinks should be an array of social link objects');
+    }
+
+    const user = await User.findById(userId);
+    const role = user.role;
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (user.role !== parseInt(process.env.AFFILIATER_ROLE)) {
+      throw new Error('User is not an Affiliater');
+    }
+
+    await user.updateSocialLinks(socialLinks);
+    res.status(200).json({ message: 'Social links updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 export {
   registerUser,
   loginUser,
@@ -439,5 +470,6 @@ export {
   getAllNonVerifiedAffiliaters,
   verifyAffiliater,
   manageUsersBlock,
-  getUserById
+  getUserById,
+  updateSocialLinks
 };

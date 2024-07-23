@@ -3,6 +3,26 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
 const defaultRole = process.env.CUSTOMER_ROLE
+
+const socialSchema = new Schema({
+    youtube: {
+        type: String,
+        trim: true
+    },
+    instagram: {
+        type: String,
+        trim: true
+    },
+    facebook: {
+        type: String,
+        trim: true
+    },
+    twitter: {
+        type: String,
+        trim: true
+    }
+});
+
 const userSchema = new Schema({
     firstName: {
         type: String,
@@ -33,9 +53,7 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'Password is required']
     },
-    socialLinks: {
-        type: [''],
-    },
+    socialLinks: [socialSchema],
     isVerified: {
         type: Boolean,
         default: false
@@ -103,5 +121,11 @@ userSchema.methods.isPasswordCorrect = async function (password) {
     }
     next()
 }
+
+// Add a method to update social links
+userSchema.methods.updateSocialLinks = async function (newLinks) {
+    this.socialLinks = newLinks;
+    return await this.save();
+};
 
 export const User = mongoose.model("User", userSchema)
