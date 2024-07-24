@@ -2,7 +2,6 @@ import { User } from "../models/user.model.js";
 import { Company } from "../models/company.model.js";
 import { Admin } from "../models/admin.model.js";
 
-
 import jwt from "jsonwebtoken";
 import { passwordValidator } from "../utils/passwordValidator.js";
 
@@ -103,16 +102,20 @@ const loginUser = async (req, res) => {
     const refreshToken = await user.generateRefreshToken();
 
     // Set refresh token in cookie
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'None',
+      sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({ message: "Validation Successful", token: accessToken });
+    return res
+      .status(200)
+      .json({ message: "Validation Successful", token: accessToken });
   } catch (err) {
-    return res.status(500).json({ message: `Internal Server Error due to ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal Server Error due to ${err.message}` });
   }
 };
 
@@ -128,59 +131,69 @@ const refreshAccessToken = async (req, res) => {
 
   try {
     // Verify refresh token
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, decoded) => {
-      if (err) {
-        if (err.name === 'TokenExpiredError') {
-          return res.status(403).json({ message: "Refresh token expired. Please log in again." });
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+      async (err, decoded) => {
+        if (err) {
+          if (err.name === "TokenExpiredError") {
+            return res
+              .status(403)
+              .json({ message: "Refresh token expired. Please log in again." });
+          }
+          return res.status(403).json({ message: "Forbidden. Invalid token." });
         }
-        return res.status(403).json({ message: "Forbidden. Invalid token." });
+
+        let user;
+        const role = Number(decoded.role);
+
+        // Retrieve user based on role from decoded token
+        if (!role) {
+          return res
+            .status(403)
+            .json({ message: "Forbidden. Invalid user role." });
+        }
+
+        const adminRole = Number(process.env.ADMIN_ROLE);
+        const customerRole = Number(process.env.CUSTOMER_ROLE);
+        const affiliaterRole = Number(process.env.AFFILIATER_ROLE);
+        const companyRole = Number(process.env.COMPANY_ROLE);
+
+        switch (role) {
+          case adminRole:
+            user = await Admin.findOne({ _id: decoded.id });
+            break;
+          case customerRole:
+            user = await User.findOne({ _id: decoded.id });
+            break;
+          case affiliaterRole:
+            user = await User.findOne({ _id: decoded.id });
+            break;
+          case companyRole:
+            user = await Company.findOne({ _id: decoded.id });
+            break;
+          default:
+            return res.status(404).json({ message: "Invalid role" });
+        }
+
+        if (!user) {
+          return res.status(404).json({ message: "Cannot find user" });
+        }
+
+        // Generate new access token
+        const accessToken = await user.generateAccessToken();
+
+        // Respond with success message and new access token
+        return res
+          .status(200)
+          .json({ message: "User validation successful", data: accessToken });
       }
-
-      let user;
-      const role = Number(decoded.role)
-
-      // Retrieve user based on role from decoded token
-      if (!role) {
-        return res.status(403).json({ message: "Forbidden. Invalid user role." });
-      }
-
-      const adminRole = Number(process.env.ADMIN_ROLE);
-      const customerRole = Number(process.env.CUSTOMER_ROLE);
-      const affiliaterRole = Number(process.env.AFFILIATER_ROLE);
-      const companyRole = Number(process.env.COMPANY_ROLE);
-
-      switch (role) {
-        case adminRole:
-          user = await Admin.findOne({ _id: decoded.id });
-          break;
-        case customerRole:
-          user = await User.findOne({ _id: decoded.id });
-          break;
-        case affiliaterRole:
-          user = await User.findOne({ _id: decoded.id });
-          break;
-        case companyRole:
-          user = await Company.findOne({ _id: decoded.id });
-          break;
-        default:
-          return res.status(404).json({ message: "Invalid role" });
-      }
-
-      if (!user) {
-        return res.status(404).json({ message: "Cannot find user" });
-      }
-
-      // Generate new access token
-      const accessToken = await user.generateAccessToken();
-
-      // Respond with success message and new access token
-      return res.status(200).json({ message: "User validation successful", data: accessToken });
-    });
-
+    );
   } catch (err) {
-    return res.status(500).json({ message: `Internal server error due to ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to ${err.message}` });
   }
-
 };
 
 // @get
@@ -201,15 +214,16 @@ const getUserById = async (req, res) => {
       role: userData.role,
       officialId: userData.officialId,
       phoneNumber: userData.phoneNumber,
-      socialLinks: userData.socialLinks
-
+      socialLinks: userData.socialLinks,
     };
 
     res.status(200).json({ message: "User data found", data });
   } catch (err) {
-    return res.status(500).json({ message: `Internal server error due to ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to ${err.message}` });
   }
-}
+};
 
 // @POST
 // user/logout
@@ -269,7 +283,12 @@ const getAllCustomers = async (req, res) => {
     // Respond with customer data and pagination info
     return res.status(200).json({
       message: "Customer data found",
-      data: { customers, hasNextPage, total: totalCustomers, currentPage: pageNumber },
+      data: {
+        customers,
+        hasNextPage,
+        total: totalCustomers,
+        currentPage: pageNumber,
+      },
     });
   } catch (err) {
     // Handle any errors
@@ -291,7 +310,10 @@ const getAllVerifiedAffiliaters = async (req, res) => {
 
   try {
     const role = parseInt(process.env.AFFILIATER_ROLE);
-    const totalAffiliaters = await User.countDocuments({ role, isVerified: true });
+    const totalAffiliaters = await User.countDocuments({
+      role,
+      isVerified: true,
+    });
     const totalPages = Math.ceil(totalAffiliaters / limitNumber);
     const hasNextPage = pageNumber < totalPages;
 
@@ -299,16 +321,16 @@ const getAllVerifiedAffiliaters = async (req, res) => {
       {
         $match: {
           role: role,
-          isVerified: true
-        }
+          isVerified: true,
+        },
       },
       {
         $lookup: {
-          from: 'tokens',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'tokens'
-        }
+          from: "tokens",
+          localField: "_id",
+          foreignField: "userId",
+          as: "tokens",
+        },
       },
       {
         $project: {
@@ -320,16 +342,16 @@ const getAllVerifiedAffiliaters = async (req, res) => {
           tokens: {
             token: 1,
             _id: 1,
-          }
-        }
+          },
+        },
       },
       {
-        $skip: skip
+        $skip: skip,
       },
       {
-        $limit: limitNumber
-      }
-    ])
+        $limit: limitNumber,
+      },
+    ]);
 
     if (affiliaters.length === 0) {
       return res.status(404).json({ message: "No affiliaters found" });
@@ -337,13 +359,19 @@ const getAllVerifiedAffiliaters = async (req, res) => {
 
     return res.status(200).json({
       message: "Affiliaters data found",
-      data: { affiliaters, hasNextPage, total: totalAffiliaters, currentPage: pageNumber },
+      data: {
+        affiliaters,
+        hasNextPage,
+        total: totalAffiliaters,
+        currentPage: pageNumber,
+      },
     });
   } catch (err) {
-    return res.status(500).json({ message: `Internal server error: ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error: ${err.message}` });
   }
 };
-
 
 // @GET
 // user/affiliaters/not-verified
@@ -357,7 +385,10 @@ const getAllNonVerifiedAffiliaters = async (req, res) => {
 
   try {
     const role = process.env.AFFILIATER_ROLE;
-    const totalAffiliaters = await User.countDocuments({ role, isVerified: false });
+    const totalAffiliaters = await User.countDocuments({
+      role,
+      isVerified: false,
+    });
     const totalPages = Math.ceil(totalAffiliaters / limitNumber);
     const hasNextPage = pageNumber < totalPages;
 
@@ -367,18 +398,26 @@ const getAllNonVerifiedAffiliaters = async (req, res) => {
       .limit(limitNumber);
 
     if (affiliaters.length === 0) {
-      return res.status(404).json({ message: "No non-verified affiliaters found" });
+      return res
+        .status(404)
+        .json({ message: "No non-verified affiliaters found" });
     }
 
     return res.status(200).json({
       message: "Non-verified affiliaters data found",
-      data: { affiliaters, hasNextPage, total: totalAffiliaters, currentPage: pageNumber },
+      data: {
+        affiliaters,
+        hasNextPage,
+        total: totalAffiliaters,
+        currentPage: pageNumber,
+      },
     });
   } catch (err) {
-    return res.status(500).json({ message: `Internal server error: ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error: ${err.message}` });
   }
 };
-
 
 // @PATCH
 // user/affiliaters/:affiliaterId/verify
@@ -389,25 +428,74 @@ const verifyAffiliater = async (req, res) => {
   try {
     const verifyAffiliater = await User.findById(affiliaterId);
     if (!verifyAffiliater) {
-      return res.status(404).json({ message: "Affiliater not found" })
+      return res.status(404).json({ message: "Affiliater not found" });
     }
 
-    if (verifyAffiliater.role !== (parseInt(process.env.AFFILIATER_ROLE))) {
-      return res.status(400).json({ message: "Unauthorized User" })
+    if (verifyAffiliater.role !== parseInt(process.env.AFFILIATER_ROLE)) {
+      return res.status(400).json({ message: "Unauthorized User" });
     }
 
-    if (verifyAffiliater.role === (parseInt(process.env.AFFILIATER_ROLE))) {
+    if (verifyAffiliater.role === parseInt(process.env.AFFILIATER_ROLE)) {
       const affiliaterVerified = await User.findByIdAndUpdate(
         affiliaterId,
         { isVerified: true },
         { new: true }
       );
-      return res.status(200).json({ message: "Affiliater Verified Successfully" })
+      return res
+        .status(200)
+        .json({ message: "Affiliater Verified Successfully" });
     }
   } catch (error) {
-    return res.status(500).json({ message: `Internal server error: ${error.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error: ${error.message}` });
   }
-}
+};
+
+// @PATCH
+// affiliater/detials
+// desc: Affiliater detials api of company
+const affiliaterMoreDetials = async (req, res) => {
+  const {
+    firstName,
+    lastName,
+    DOB,
+    gender,
+    nationality,
+    address,
+    phoneNumber,
+    portfolio,
+    email,
+  } = req.body;
+  const { affiliaterId } = req.params;
+  try {
+    const affiliater = await User.findOne({ _id: affiliaterId }).select(
+      "-password"
+    );
+    if (!affiliater) {
+      return res.status(404).json({ message: "Affiliater doesn't exist" });
+    }
+    affiliater.firstName = firstName;
+    affiliater.lastName = lastName;
+    affiliater.DOB = DOB;
+    affiliater.gender = gender;
+    affiliater.nationality = nationality;
+    affiliater.address = address;
+    affiliater.phoneNumber = phoneNumber;
+    affiliater.portfolio = portfolio;
+    affiliater.email = email;
+    await affiliater.save();
+
+    return res.status(200).json({
+      message: "Affiliater detials updated successfully",
+      data: affiliater,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message} ` });
+  }
+};
 
 // @PATCH
 // user/users/:userId/manage-block
@@ -416,18 +504,20 @@ const manageUsersBlock = async (req, res) => {
   const { userId } = req.params;
   const { isBlocked } = req.body;
   try {
-    const allUser = await User.findById(userId)
+    const allUser = await User.findById(userId);
     if (!allUser) {
-      return res.status(404).json({ message: "User not found" })
+      return res.status(404).json({ message: "User not found" });
     }
 
     allUser.isBlocked = isBlocked;
     await allUser.save();
-    return res.status(200).json({ message: "Blocked Sucessfully" })
+    return res.status(200).json({ message: "Blocked Sucessfully" });
   } catch (error) {
-    return res.status(500).json({ message: `Internal server error due to: ${error.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to: ${error.message}` });
   }
-}
+};
 
 //@PATCH
 //user/users/:userId/update-social-links
@@ -438,27 +528,26 @@ const updateSocialLinks = async (req, res) => {
     const { userId } = req.params;
     const { socialLinks } = req.body;
     if (!Array.isArray(socialLinks)) {
-      throw new Error('newLinks should be an array of social link objects');
+      throw new Error("newLinks should be an array of social link objects");
     }
 
     const user = await User.findById(userId);
     const role = user.role;
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     if (user.role !== parseInt(process.env.AFFILIATER_ROLE)) {
-      throw new Error('User is not an Affiliater');
+      throw new Error("User is not an Affiliater");
     }
 
     await user.updateSocialLinks(socialLinks);
-    res.status(200).json({ message: 'Social links updated successfully' });
+    res.status(200).json({ message: "Social links updated successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 export {
   registerUser,
@@ -471,5 +560,6 @@ export {
   verifyAffiliater,
   manageUsersBlock,
   getUserById,
-  updateSocialLinks
+  updateSocialLinks,
+  affiliaterMoreDetials,
 };
