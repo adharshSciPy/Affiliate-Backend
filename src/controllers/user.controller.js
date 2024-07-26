@@ -479,7 +479,6 @@ const affiliaterMoreDetials = async (req, res) => {
       return res.status(404).json({ message: "Affiliater not found" });
     }
 
-
     affiliater.firstName = firstName;
     affiliater.lastName = lastName;
     affiliater.DOB = DOB;
@@ -543,12 +542,41 @@ const updateSocialLinks = async (req, res) => {
       throw new Error("User not found");
     }
 
-    if (user.role !== parseInt(process.env.AFFILIATER_ROLE)) {
+    if (role !== parseInt(process.env.AFFILIATER_ROLE)) {
       throw new Error("User is not an Affiliater");
     }
 
     await user.updateSocialLinks(socialLinks);
     res.status(200).json({ message: "Social links updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+//@PATCH
+//affiliater/bank detials
+//desc :  Affiliater bank detials api
+const updateBankInfo = async (req, res) => {
+  try {
+    const { affiliaterId } = req.params;
+    const { bankInfo } = req.body;
+    if (!Array.isArray(bankInfo)) {
+      throw new Error("newLinks should be an array of bankInfo objects");
+    }
+
+    const affiliater = await User.findById(affiliaterId);
+    const role = affiliater.role;
+
+    if (!affiliater) {
+      throw new Error("User not found");
+    }
+
+    if (role !== parseInt(process.env.AFFILIATER_ROLE)) {
+      throw new Error("User is not an Affiliater");
+    }
+
+    await affiliater.updateBankInfo(bankInfo);
+    res.status(200).json({ message: "bankInfo updated successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -567,4 +595,5 @@ export {
   getUserById,
   updateSocialLinks,
   affiliaterMoreDetials,
+  updateBankInfo,
 };
