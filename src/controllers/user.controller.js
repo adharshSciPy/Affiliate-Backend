@@ -554,31 +554,70 @@ const updateSocialLinks = async (req, res) => {
 };
 
 //@PATCH
-//affiliater/bank detials
-//desc :  Affiliater bank detials api
-const updateBankInfo = async (req, res) => {
+//affiliater/domestic bank detials
+//desc :  Affiliater domestic bank detials api
+const affiliaterDomestic = async (req, res) => {
+  const { bankName, holderName, accountNumber, bankBranch, IFSC } = req.body;
+  const { affiliaterId } = req.params;
   try {
-    const { affiliaterId } = req.params;
-    const { bankInfo } = req.body;
-    if (!Array.isArray(bankInfo)) {
-      throw new Error("newLinks should be an array of bankInfo objects");
-    }
-
-    const affiliater = await User.findById(affiliaterId);
-    const role = affiliater.role;
-
+    const affiliater = await User.findOne({ _id: affiliaterId }).select(
+      "-password"
+    );
     if (!affiliater) {
-      throw new Error("User not found");
+      return res.status(404).json({ message: "Affiliater doesn't exist" });
+    }
+    if (affiliater.role !== parseInt(process.env.AFFILIATER_ROLE)) {
+      return res.status(404).json({ message: "Affiliater not found" });
     }
 
-    if (role !== parseInt(process.env.AFFILIATER_ROLE)) {
-      throw new Error("User is not an Affiliater");
+    affiliater.bankName = bankName;
+    affiliater.holderName = holderName;
+    affiliater.accountNumber = accountNumber;
+    affiliater.bankBranch = bankBranch;
+    affiliater.IFSC = IFSC;
+    await affiliater.save();
+
+    return res.status(200).json({
+      message: "Affiliater domestic bank detials updated successfully",
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message} ` });
+  }
+};
+
+//@PATCH
+//affiliater/international bank detials
+//desc :  Affiliater international bank detials api
+const affiliaterInternational = async (req, res) => {
+  const { bankName, holderName, accountNumber, IBAN, BIC } = req.body;
+  const { affiliaterId } = req.params;
+  try {
+    const affiliater = await User.findOne({ _id: affiliaterId }).select(
+      "-password"
+    );
+    if (!affiliater) {
+      return res.status(404).json({ message: "Affiliater doesn't exist" });
+    }
+    if (affiliater.role !== parseInt(process.env.AFFILIATER_ROLE)) {
+      return res.status(404).json({ message: "Affiliater not found" });
     }
 
-    await affiliater.updateBankInfo(bankInfo);
-    res.status(200).json({ message: "bankInfo updated successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    affiliater.bankName = bankName;
+    affiliater.holderName = holderName;
+    affiliater.accountNumber = accountNumber;
+    affiliater.IBAN = IBAN;
+    affiliater.BIC= BIC;
+    await affiliater.save();
+
+    return res.status(200).json({
+      message: "Affiliater international bank detials updated successfully",
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal Server due to ${err.message} ` });
   }
 };
 
@@ -595,5 +634,6 @@ export {
   getUserById,
   updateSocialLinks,
   affiliaterMoreDetials,
-  updateBankInfo,
+  affiliaterDomestic,
+  affiliaterInternational,
 };

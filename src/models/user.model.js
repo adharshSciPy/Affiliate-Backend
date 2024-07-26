@@ -23,37 +23,6 @@ const socialSchema = new Schema({
   },
 });
 
-const affiliaterBankSchema = new Schema({
-  bankName: {
-    type: String,
-    required: true,
-  },
-  holderName: {
-    type: String,
-    required: true,
-  },
-  accountNumber: {
-    type: Number,
-    required: true,
-  },
-  bankBranch: {
-    type: String,
-    required: true,
-  },
-  IFSC: {
-    type: String,
-    required: true,
-  },
-  IBAN: {
-    type: String,
-    required: true,
-  },
-  BIC: {
-    type: String,
-    required: true,
-  },
-});
-
 const userSchema = new Schema(
   {
     firstName: {
@@ -110,7 +79,27 @@ const userSchema = new Schema(
     address: {
       type: String,
     },
-    bankInfo: [affiliaterBankSchema],
+    bankName: {
+      type: String,
+    },
+    holderName: {
+      type: String,
+    },
+    accountNumber: {
+      type: Number,
+    },
+    bankBranch: {
+      type: String,
+    },
+    IFSC: {
+      type: String,
+    },
+    IBAN: {
+      type: String,
+    },
+    BIC: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -174,12 +163,6 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 // Add a method to update social links
 userSchema.methods.updateSocialLinks = async function (newLinks) {
   this.socialLinks = newLinks;
-  return await this.save();
-};
-
-// Add a method to update bank detials
-userSchema.methods.updateBankInfo = async function (newBankInfo) {
-  this.bankInfo = newBankInfo;
   return await this.save();
 };
 
