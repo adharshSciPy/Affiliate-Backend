@@ -475,9 +475,11 @@ const affiliaterMoreDetials = async (req, res) => {
     if (!affiliater) {
       return res.status(404).json({ message: "Affiliater doesn't exist" });
     }
-    if(affiliater.role!==process.env.AFFILIATER_ROLE){
+    if (affiliater.role !== parseInt(process.env.AFFILIATER_ROLE)) {
       return res.status(404).json({ message: "Affiliater not found" });
     }
+
+
     affiliater.firstName = firstName;
     affiliater.lastName = lastName;
     affiliater.DOB = DOB;
