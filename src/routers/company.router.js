@@ -10,7 +10,8 @@ import {
   logoutCompany,
   verifyCompany,
   manageCompanyBlock,
-  getPersonalInfo
+  getPersonalInfo,
+  updateSocialLinks
 } from "../controllers/company.controller.js";
 
 const companyRoute = Router();
@@ -24,6 +25,7 @@ companyRoute.route("/companies/:companyId").delete(deleteCompany);
 companyRoute.route('/companies').get(getAllVerifiedCompanies)
 companyRoute.route('/companies/not-verified').get(getAllNewCompanies)
 companyRoute.route('/companies/:companyId/verify').patch(verifyCompany)
+companyRoute.route('/companies/:companyId/social-links').patch(updateSocialLinks)
 companyRoute.route('/companies/:companyId/manage-block').patch(manageCompanyBlock)
 companyRoute.route('/companies/:companyId/get-personal').get(getPersonalInfo)
 

@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { registerUser, loginUser, refreshAccessToken, logoutUser, getAllCustomers, getAllVerifiedAffiliaters, getAllNonVerifiedAffiliaters, verifyAffiliater, manageUsersBlock, getUserById, updateSocialLinks, affiliaterMoreDetials } from "../controllers/user.controller.js"
+import { registerUser, loginUser, refreshAccessToken, logoutUser, getAllCustomers, getAllVerifiedAffiliaters, getAllNonVerifiedAffiliaters, verifyAffiliater, manageUsersBlock, getUserById, updateSocialLinks, affiliaterMoreDetials, updateBankInfo } from "../controllers/user.controller.js"
 
 const userRoute = Router()
 
@@ -15,5 +15,6 @@ userRoute.route('/affiliaters/:affiliaterId/verify').patch(verifyAffiliater)
 userRoute.route('/users/:userId/manage-block').patch(manageUsersBlock)
 userRoute.route('/users/:userId').get(getUserById)
 userRoute.route('/users/:userId/social-links').patch(updateSocialLinks)
+userRoute.route('/users/:affiliaterId/bank-info').patch(updateBankInfo)
 
 export default userRoute

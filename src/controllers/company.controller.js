@@ -42,7 +42,12 @@ const registerCompany = async (req, res) => {
 
     //company creation
     const role = process.env.COMPANY_ROLE;
-    const company = await Company.create({ companyName, email, password, role });
+    const company = await Company.create({
+      companyName,
+      email,
+      password,
+      role,
+    });
     const createdCompany = await Company.findOne({ _id: company._id }).select(
       "-password"
     );
@@ -165,8 +170,7 @@ const companyMoreDetials = async (req, res) => {
     nationality,
     emailAddress,
     website,
-    Address
-
+    Address,
   } = req.body;
   const { companyId } = req.params;
   try {
@@ -279,7 +283,12 @@ const getAllVerifiedCompanies = async (req, res) => {
     //Respond with companies data and pagination info
     return res.status(200).json({
       message: "companies data found",
-      data: { companies, hasNextPage, total: totalCompanies, currentPage: pageNumber },
+      data: {
+        companies,
+        hasNextPage,
+        total: totalCompanies,
+        currentPage: pageNumber,
+      },
     });
   } catch (err) {
     //Handle any errors
@@ -319,7 +328,12 @@ const getAllNewCompanies = async (req, res) => {
     //Respond with companies data and pagination info
     return res.status(200).json({
       message: "companies data found",
-      data: { companies, hasNextPage, total: totalCompanies, currentPage: pageNumber },
+      data: {
+        companies,
+        hasNextPage,
+        total: totalCompanies,
+        currentPage: pageNumber,
+      },
     });
   } catch (err) {
     //Handle any errors
@@ -331,7 +345,7 @@ const getAllNewCompanies = async (req, res) => {
 
 // @PATCH
 // company/companies/:companyId/verify
-// desc: Convert the company into verified 
+// desc: Convert the company into verified
 const verifyCompany = async (req, res) => {
   const { companyId } = req.params;
   try {
@@ -345,7 +359,9 @@ const verifyCompany = async (req, res) => {
 
     return res.status(200).json({ message: "Company Verified Successfully" });
   } catch (err) {
-    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to: ${err.message}` });
   }
 };
 
@@ -365,7 +381,9 @@ const manageCompanyBlock = async (req, res) => {
 
     return res.status(200).json({ message: "Company Blocked Successfully" });
   } catch (err) {
-    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to: ${err.message}` });
   }
 };
 
@@ -375,14 +393,43 @@ const manageCompanyBlock = async (req, res) => {
 const getPersonalInfo = async (req, res) => {
   const { companyId } = req.params;
   try {
-    const company = await Company.findById(companyId)
+    const company = await Company.findById(companyId);
     if (!company) {
       return res.status(400).json({ message: "Company not found" });
     }
-    const getresult = await Company.findById(companyId)
-    return res.status(200).json({ message: "Personal data's found", data: getresult })
+    const getresult = await Company.findById(companyId);
+    return res
+      .status(200)
+      .json({ message: "Personal data's found", data: getresult });
   } catch (error) {
-    return res.status(500).json({ message: `Internal server error due to: ${error.message}` });
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to: ${error.message}` });
+  }
+};
+
+//@PATCH
+//company/companies/:companyId/update-social-links
+//desc : To manage social media links
+const updateSocialLinks = async (req, res) => {
+  try {
+    const { companyId } = req.params;
+    const { socialLinks } = req.body;
+    if (!Array.isArray(socialLinks)) {
+      throw new Error("newLinks should be an array of social link objects");
+    }
+
+    const company = await Company.findById(companyId);
+    const role = company.role;
+
+    if (!company) {
+      throw new Error("Company not found");
+    }
+
+    await company.updateSocialLinks(socialLinks);
+    res.status(200).json({ message: "Social links updated successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -397,5 +444,6 @@ export {
   logoutCompany,
   verifyCompany,
   manageCompanyBlock,
-  getPersonalInfo
+  getPersonalInfo,
+  updateSocialLinks,
 };

@@ -3,6 +3,26 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 const defaultRole = process.env.COMPANY_ROLE
+
+const socialSchema = new Schema({
+  youtube: {
+    type: String,
+    trim: true,
+  },
+  instagram: {
+    type: String,
+    trim: true,
+  },
+  facebook: {
+    type: String,
+    trim: true,
+  },
+  twitter: {
+    type: String,
+    trim: true,
+  },
+});
+
 const companySchema = new Schema(
   {
     companyName: {
@@ -91,7 +111,7 @@ const companySchema = new Schema(
       type: String,
       required: [true, "Address is required"],
     },
-
+    socialLinks: [socialSchema],
   },
   { timestamps: true }
 );
@@ -149,6 +169,12 @@ companySchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
   }
   next();
+};
+
+// Add a method to update social links
+companySchema.methods.updateSocialLinks = async function (newLinks) {
+  this.socialLinks = newLinks;
+  return await this.save();
 };
 
 export const Company = mongoose.model("Company", companySchema);
