@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { registerUser, loginUser, refreshAccessToken, logoutUser, getAllCustomers, getAllVerifiedAffiliaters, getAllNonVerifiedAffiliaters, verifyAffiliater, manageUsersBlock, getUserById, updateSocialLinks, affiliaterMoreDetials, affiliaterDomestic, affiliaterInternational } from "../controllers/user.controller.js"
+import { registerUser, loginUser, refreshAccessToken, logoutUser, getAllCustomers, getAllVerifiedAffiliaters, getAllNonVerifiedAffiliaters, verifyAffiliater, manageUsersBlock, getUserById, updateSocialLinks, affiliaterMoreDetials, affiliaterDomestic, affiliaterInternational, proofOfAddress } from "../controllers/user.controller.js"
 
 const userRoute = Router()
 
@@ -12,10 +12,12 @@ userRoute.route('/customers').get(getAllCustomers)
 userRoute.route('/affiliaters').get(getAllVerifiedAffiliaters)
 userRoute.route('/affiliaters/not-verified').get(getAllNonVerifiedAffiliaters)
 userRoute.route('/affiliaters/:affiliaterId/verify').patch(verifyAffiliater)
+userRoute.route('/affiliaters/:affiliaterId/proof-of-address').patch(proofOfAddress)
 userRoute.route('/users/:userId/manage-block').patch(manageUsersBlock)
 userRoute.route('/users/:userId').get(getUserById)
 userRoute.route('/users/:userId/social-links').patch(updateSocialLinks)
 userRoute.route('/users/:affiliaterId/bank-info-domestic').patch(affiliaterDomestic)
 userRoute.route('/users/:affiliaterId/bank-info-international').patch(affiliaterInternational)
+
 
 export default userRoute

@@ -215,6 +215,21 @@ const getUserById = async (req, res) => {
       officialId: userData.officialId,
       phoneNumber: userData.phoneNumber,
       socialLinks: userData.socialLinks,
+      DOB: userData.DOB,
+      address: userData.address,
+      gender: userData.gender,
+      nationality: userData.nationality,
+      phoneNumber: userData.phoneNumber,
+      portfolio: userData.portfolio,
+      IFSC: userData.IFSC,
+      accountNumber: userData.accountNumber,
+      bankBranch: userData.bankBranch,
+      bankName: userData.bankName,
+      holderName: userData.holderName,
+      BIC: userData.BIC,
+      IBAN: userData.IBAN,
+      IDNumber: userData.IDNumber,
+      ExpiryDateOfID: userData.ExpiryDateOfID
     };
 
     res.status(200).json({ message: "User data found", data });
@@ -465,7 +480,7 @@ const affiliaterMoreDetials = async (req, res) => {
     address,
     phoneNumber,
     portfolio,
-    email,
+    email
   } = req.body;
   const { affiliaterId } = req.params;
   try {
@@ -608,7 +623,7 @@ const affiliaterInternational = async (req, res) => {
     affiliater.holderName = holderName;
     affiliater.accountNumber = accountNumber;
     affiliater.IBAN = IBAN;
-    affiliater.BIC= BIC;
+    affiliater.BIC = BIC;
     await affiliater.save();
 
     return res.status(200).json({
@@ -620,6 +635,34 @@ const affiliaterInternational = async (req, res) => {
       .json({ message: `Internal Server due to ${err.message} ` });
   }
 };
+
+//Proof of Address
+//desc: patch api for proof of address
+
+const proofOfAddress = async (req, res) => {
+  const { affiliaterId } = req.params;
+  const { IDNumber, ExpiryDateOfID } = req.body;
+  try {
+    const affiliater = await User.findOne({ _id: affiliaterId }).select(
+      "-password"
+    );
+    if (!affiliater) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (affiliater.role !== parseInt(process.env.AFFILIATER_ROLE)) {
+      return res.status(404).json({ message: "Affiliater not found" });
+    }
+
+    affiliater.IDNumber = IDNumber;
+    affiliater.ExpiryDateOfID = ExpiryDateOfID;
+    await affiliater.save()
+    return res.status(200).json({ message: "Proof of Address updated successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
+  }
+}
+
+
 
 export {
   registerUser,
@@ -636,4 +679,5 @@ export {
   affiliaterMoreDetials,
   affiliaterDomestic,
   affiliaterInternational,
+  proofOfAddress
 };

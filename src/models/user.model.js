@@ -100,6 +100,12 @@ const userSchema = new Schema(
     BIC: {
       type: String,
     },
+    IDNumber: {
+      type: String,
+    },
+    ExpiryDateOfID: {
+      type: String,
+    }
   },
   { timestamps: true }
 );
