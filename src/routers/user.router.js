@@ -16,8 +16,8 @@ userRoute.route('/affiliaters/:affiliaterId/proof-of-address').patch(proofOfAddr
 userRoute.route('/users/:userId/manage-block').patch(manageUsersBlock)
 userRoute.route('/users/:userId').get(getUserById)
 userRoute.route('/users/:userId/social-links').patch(updateSocialLinks)
-userRoute.route('/users/:affiliaterId/bank-info-domestic').patch(affiliaterDomestic)
-userRoute.route('/users/:affiliaterId/bank-info-international').patch(affiliaterInternational)
+userRoute.route('/affiliaters/:affiliaterId/bank-info-domestic').patch(affiliaterDomestic)
+userRoute.route('/affiliaters/:affiliaterId/bank-info-international').patch(affiliaterInternational)
 
 
 export default userRoute

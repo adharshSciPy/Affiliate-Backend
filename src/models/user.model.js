@@ -86,7 +86,7 @@ const userSchema = new Schema(
       type: String,
     },
     accountNumber: {
-      type: Number,
+      type: String,
     },
     bankBranch: {
       type: String,
@@ -104,6 +104,9 @@ const userSchema = new Schema(
       type: String,
     },
     ExpiryDateOfID: {
+      type: String,
+    },
+    UPINumber: {
       type: String,
     }
   },

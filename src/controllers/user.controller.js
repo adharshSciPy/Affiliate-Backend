@@ -229,7 +229,8 @@ const getUserById = async (req, res) => {
       BIC: userData.BIC,
       IBAN: userData.IBAN,
       IDNumber: userData.IDNumber,
-      ExpiryDateOfID: userData.ExpiryDateOfID
+      ExpiryDateOfID: userData.ExpiryDateOfID,
+      UPINumber: userData.UPINumber
     };
 
     res.status(200).json({ message: "User data found", data });
@@ -572,7 +573,7 @@ const updateSocialLinks = async (req, res) => {
 //affiliater/domestic bank detials
 //desc :  Affiliater domestic bank detials api
 const affiliaterDomestic = async (req, res) => {
-  const { bankName, holderName, accountNumber, bankBranch, IFSC } = req.body;
+  const { bankName, holderName, accountNumber, bankBranch, IFSC, UPINumber } = req.body;
   const { affiliaterId } = req.params;
   try {
     const affiliater = await User.findOne({ _id: affiliaterId }).select(
@@ -590,6 +591,7 @@ const affiliaterDomestic = async (req, res) => {
     affiliater.accountNumber = accountNumber;
     affiliater.bankBranch = bankBranch;
     affiliater.IFSC = IFSC;
+    affiliater.UPINumber = UPINumber;
     await affiliater.save();
 
     return res.status(200).json({
@@ -606,7 +608,7 @@ const affiliaterDomestic = async (req, res) => {
 //affiliater/international bank detials
 //desc :  Affiliater international bank detials api
 const affiliaterInternational = async (req, res) => {
-  const { bankName, holderName, accountNumber, IBAN, BIC } = req.body;
+  const { bankName, holderName, accountNumber, IBAN, BIC, UPINumber } = req.body;
   const { affiliaterId } = req.params;
   try {
     const affiliater = await User.findOne({ _id: affiliaterId }).select(
