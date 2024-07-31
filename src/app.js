@@ -36,5 +36,6 @@ app.use('/api/v1/transaction', transactionRoute)
 app.use('/api/v1/payout', payoutRoute)
 app.use('/api/v1/order', orderRoute)
 app.use('/api/v1/token', tokenRoute)
+app.use('/uploads', express.static('uploads'))
 
 export { app }

@@ -643,7 +643,7 @@ const affiliaterInternational = async (req, res) => {
 
 const proofOfAddress = async (req, res) => {
   const { affiliaterId } = req.params;
-  const { IDNumber, ExpiryDateOfID } = req.body;
+  const { files, IDNumber, ExpiryDateOfID } = req.body;
   try {
     const affiliater = await User.findOne({ _id: affiliaterId }).select(
       "-password"
@@ -653,6 +653,21 @@ const proofOfAddress = async (req, res) => {
     }
     if (affiliater.role !== parseInt(process.env.AFFILIATER_ROLE)) {
       return res.status(404).json({ message: "Affiliater not found" });
+    }
+
+    // if (req.files) {
+    //   let path = ''
+    //   req.files.forEach(function (files, index, arr) {
+    //     path = path + files.path + ','
+    //   })
+    //   path = path.substring(0, path.lastIndexOf(','))
+    //   affiliater.uploads = path
+    // }
+
+    if (req.files && req.files.length > 0) {
+      req.files.forEach((file, index) => {
+        affiliater.uploads[index] = file.path;
+      });
     }
 
     affiliater.IDNumber = IDNumber;

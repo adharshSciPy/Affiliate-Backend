@@ -108,6 +108,9 @@ const userSchema = new Schema(
     },
     UPINumber: {
       type: String,
+    },
+    uploads: {
+      type: Array,
     }
   },
   { timestamps: true }
