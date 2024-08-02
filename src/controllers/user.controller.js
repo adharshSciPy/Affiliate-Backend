@@ -643,7 +643,7 @@ const affiliaterInternational = async (req, res) => {
 
 const proofOfAddress = async (req, res) => {
   const { affiliaterId } = req.params;
-  const { files, IDNumber, ExpiryDateOfID } = req.body;
+  const { IDNumber, ExpiryDateOfID } = req.body;
   try {
     const affiliater = await User.findOne({ _id: affiliaterId }).select(
       "-password"
@@ -655,21 +655,6 @@ const proofOfAddress = async (req, res) => {
       return res.status(404).json({ message: "Affiliater not found" });
     }
 
-    // if (req.files) {
-    //   let path = ''
-    //   req.files.forEach(function (files, index, arr) {
-    //     path = path + files.path + ','
-    //   })
-    //   path = path.substring(0, path.lastIndexOf(','))
-    //   affiliater.uploads = path
-    // }
-
-    if (req.files && req.files.length > 0) {
-      req.files.forEach((file, index) => {
-        affiliater.uploads[index] = file.path;
-      });
-    }
-
     affiliater.IDNumber = IDNumber;
     affiliater.ExpiryDateOfID = ExpiryDateOfID;
     await affiliater.save()
@@ -677,6 +662,36 @@ const proofOfAddress = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
   }
+}
+
+//PATCH
+//file upload using patch
+
+const identificationDocument = async (req, res) => {
+  const { affiliaterId } = req.params;
+  const { files } = req.body;
+  try {
+    const affiliater = await User.findOne({ _id: affiliaterId }).select(
+      "-password"
+    );
+    if (!affiliater) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (affiliater.role !== parseInt(process.env.AFFILIATER_ROLE)) {
+      return res.status(404).json({ message: "Affiliater not found" });
+    }
+
+    if (req.files && req.files.length > 0) {
+      req.files.forEach((file, index) => {
+        affiliater.uploads[index] = file.path;
+      });
+    }
+    await affiliater.save()
+    return res.status(200).json({ message: "Document updated successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
+  }
+
 }
 
 
@@ -696,5 +711,6 @@ export {
   affiliaterMoreDetials,
   affiliaterDomestic,
   affiliaterInternational,
-  proofOfAddress
+  proofOfAddress,
+  identificationDocument
 };
