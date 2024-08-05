@@ -681,11 +681,16 @@ const identificationDocument = async (req, res) => {
       return res.status(404).json({ message: "Affiliater not found" });
     }
 
+    // if (req.files && req.files.length > 0) {
+    //   req.files.forEach((file, index) => {
+    //     affiliater.uploads[index] = file.path;
+    //   });
+    // }
+    
     if (req.files && req.files.length > 0) {
-      req.files.forEach((file, index) => {
-        affiliater.uploads[index] = file.path;
-      });
+      affiliater.uploads = req.files.map(file => file.path);
     }
+
     await affiliater.save()
     return res.status(200).json({ message: "Document updated successfully" });
   } catch (err) {
