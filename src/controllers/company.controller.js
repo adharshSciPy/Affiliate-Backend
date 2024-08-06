@@ -156,13 +156,8 @@ const refreshCompanyAccessToken = async (req, res) => {
 // desc: Company detials api of company
 const companyMoreDetials = async (req, res) => {
   const {
-    companyName,
+
     phoneNumber,
-    address,
-    pincode,
-    location,
-    gstNumber,
-    licenseNumber,
     firstName,
     lastName,
     DOB,
@@ -387,6 +382,43 @@ const manageCompanyBlock = async (req, res) => {
   }
 };
 
+// @get
+// userById
+// desc:find only one user data at a time
+const getCompanyById = async (req, res) => {
+  const { companyId } = req.params;
+  try {
+    const userData = await Company.findOne({ _id: companyId });
+
+    if (!userData) {
+      return res.status(404).json({ message: "Cannot find company" });
+    }
+    const data = {
+      companyName: userData.companyName,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      role: userData.role,
+      Address: userData.Address,
+      DOB: userData.DOB,
+      Gender: userData.Gender,
+      emailAddress: userData.emailAddress,
+      nationality: userData.nationality,
+      phoneNumber: userData.phoneNumber,
+      website: userData.website,
+      socialLinks: userData.socialLinks,
+      ExpiryDateOfID: userData.ExpiryDateOfID,
+      IDNumber: userData.IDNumber
+    };
+
+    res.status(200).json({ message: "Company data found", data });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: `Internal server error due to ${err.message}` });
+  }
+};
+
 //@GET
 // company/companies/:companyId
 // desc: get personal information of a company
@@ -433,6 +465,30 @@ const updateSocialLinks = async (req, res) => {
   }
 };
 
+//@PATCH
+//company/companies/:companyId/identification
+//desc: To add identification details
+const identificationDetails = async (req, res) => {
+  const { companyId } = req.params;
+  const { IDNumber, ExpiryDateOfID } = req.body;
+
+  try {
+    const company = await Company.findOne({ _id: companyId }).select("-password");
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+    if (company.role !== parseInt(process.env.COMPANY_ROLE)) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+    company.IDNumber = IDNumber;
+    company.ExpiryDateOfID = ExpiryDateOfID;
+    await company.save()
+    return res.status(200).json({ message: 'Identification Details Updated Successfully' })
+  } catch (err) {
+    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
+  }
+}
+
 export {
   registerCompany,
   loginCompany,
@@ -446,4 +502,6 @@ export {
   manageCompanyBlock,
   getPersonalInfo,
   updateSocialLinks,
+  identificationDetails,
+  getCompanyById
 };

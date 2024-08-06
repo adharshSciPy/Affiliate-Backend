@@ -11,7 +11,9 @@ import {
   verifyCompany,
   manageCompanyBlock,
   getPersonalInfo,
-  updateSocialLinks
+  updateSocialLinks,
+  identificationDetails,
+  getCompanyById
 } from "../controllers/company.controller.js";
 
 const companyRoute = Router();
@@ -28,6 +30,8 @@ companyRoute.route('/companies/:companyId/verify').patch(verifyCompany)
 companyRoute.route('/companies/:companyId/social-links').patch(updateSocialLinks)
 companyRoute.route('/companies/:companyId/manage-block').patch(manageCompanyBlock)
 companyRoute.route('/companies/:companyId/get-personal').get(getPersonalInfo)
+companyRoute.route('/companies/:companyId/identification').patch(identificationDetails)
+companyRoute.route('/companies/:companyId/getcompanyById').get(getCompanyById)
 
 
 export default companyRoute;

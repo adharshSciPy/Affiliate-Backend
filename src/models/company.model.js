@@ -111,6 +111,12 @@ const companySchema = new Schema(
       type: String,
       required: [true, "Address is required"],
     },
+    IDNumber: {
+      type: String
+    },
+    ExpiryDateOfID: {
+      type: String
+    },
     socialLinks: [socialSchema],
   },
   { timestamps: true }
