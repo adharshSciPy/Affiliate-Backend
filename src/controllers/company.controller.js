@@ -383,32 +383,32 @@ const manageCompanyBlock = async (req, res) => {
 };
 
 // @get
-// userById
-// desc:find only one user data at a time
+// companyById
+// desc:find only one company data at a time
 const getCompanyById = async (req, res) => {
   const { companyId } = req.params;
   try {
-    const userData = await Company.findOne({ _id: companyId });
+    const companyData = await Company.findOne({ _id: companyId });
 
-    if (!userData) {
+    if (!companyData) {
       return res.status(404).json({ message: "Cannot find company" });
     }
     const data = {
-      companyName: userData.companyName,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      email: userData.email,
-      role: userData.role,
-      Address: userData.Address,
-      DOB: userData.DOB,
-      Gender: userData.Gender,
-      emailAddress: userData.emailAddress,
-      nationality: userData.nationality,
-      phoneNumber: userData.phoneNumber,
-      website: userData.website,
-      socialLinks: userData.socialLinks,
-      ExpiryDateOfID: userData.ExpiryDateOfID,
-      IDNumber: userData.IDNumber
+      companyName: companyData.companyName,
+      firstName: companyData.firstName,
+      lastName: companyData.lastName,
+      email: companyData.email,
+      role: companyData.role,
+      Address: companyData.Address,
+      DOB: companyData.DOB,
+      Gender: companyData.Gender,
+      emailAddress: companyData.emailAddress,
+      nationality: companyData.nationality,
+      phoneNumber: companyData.phoneNumber,
+      website: companyData.website,
+      socialLinks: companyData.socialLinks,
+      ExpiryDateOfID: companyData.ExpiryDateOfID,
+      IDNumber: companyData.IDNumber
     };
 
     res.status(200).json({ message: "Company data found", data });
