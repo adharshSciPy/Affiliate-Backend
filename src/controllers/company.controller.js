@@ -549,6 +549,33 @@ const bankInfo = async (req, res) => {
   }
 }
 
+//@PATCH
+//To upload files for a company
+const proofOfAddress = async (req, res) => {
+  const { companyId } = req.params;
+  const { files } = req.body;
+  try {
+    const company = await User.findOne({ _id: companyId }).select(
+      "-password"
+    );
+    if (!company) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (company.role !== parseInt(process.env.COMPANY_ROLE)) {
+      return res.status(404).json({ message: "Affiliater not found" });
+    }
+
+    if (req.files && req.files.length > 0) {
+      company.uploads = req.files.map(file => file.path);
+    }
+
+    await company.save()
+    return res.status(200).json({ message: "ProofOfAddress updated successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
+  }
+
+}
 
 
 
@@ -573,5 +600,6 @@ export {
   identificationDetails,
   getCompanyById,
   businessInformation,
-  bankInfo
+  bankInfo,
+  proofOfAddress
 };

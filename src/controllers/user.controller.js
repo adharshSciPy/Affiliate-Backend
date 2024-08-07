@@ -680,12 +680,6 @@ const identificationDocument = async (req, res) => {
     if (affiliater.role !== parseInt(process.env.AFFILIATER_ROLE)) {
       return res.status(404).json({ message: "Affiliater not found" });
     }
-
-    // if (req.files && req.files.length > 0) {
-    //   req.files.forEach((file, index) => {
-    //     affiliater.uploads[index] = file.path;
-    //   });
-    // }
     
     if (req.files && req.files.length > 0) {
       affiliater.uploads = req.files.map(file => file.path);

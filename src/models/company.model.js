@@ -138,6 +138,9 @@ const companySchema = new Schema(
     UPINumber: {
       type: String
     },
+    uploads: {
+      type: Array
+    },
     socialLinks: [socialSchema],
   },
   { timestamps: true }

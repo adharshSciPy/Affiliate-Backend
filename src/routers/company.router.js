@@ -15,8 +15,10 @@ import {
   identificationDetails,
   getCompanyById,
   businessInformation,
-  bankInfo
+  bankInfo,
+  proofOfAddress
 } from "../controllers/company.controller.js";
+import upload from "../middlewares/uploads.js"
 
 const companyRoute = Router();
 
@@ -36,6 +38,7 @@ companyRoute.route('/companies/:companyId/identification').patch(identificationD
 companyRoute.route('/companies/:companyId/getcompanyById').get(getCompanyById)
 companyRoute.route('/companies/:companyId/businessinfo').patch(businessInformation)
 companyRoute.route('/companies/:companyId/bankInfo').patch(bankInfo)
+companyRoute.route('/companies/:companyId/proofOfAddress').patch(upload.array('uploads[]'), proofOfAddress)
 
 
 export default companyRoute;
