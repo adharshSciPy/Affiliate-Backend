@@ -117,6 +117,27 @@ const companySchema = new Schema(
     ExpiryDateOfID: {
       type: String
     },
+    registerNumber: {
+      type: String
+    },
+    companyAddress: {
+      type: String
+    },
+    businessNature: {
+      type: String
+    },
+    listOfOwners: {
+      type: String
+    },
+    IFSC: {
+      type: String
+    },
+    accountNumber: {
+      type: String
+    },
+    UPINumber: {
+      type: String
+    },
     socialLinks: [socialSchema],
   },
   { timestamps: true }

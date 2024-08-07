@@ -408,7 +408,14 @@ const getCompanyById = async (req, res) => {
       website: companyData.website,
       socialLinks: companyData.socialLinks,
       ExpiryDateOfID: companyData.ExpiryDateOfID,
-      IDNumber: companyData.IDNumber
+      IDNumber: companyData.IDNumber,
+      registerNumber: companyData.registerNumber,
+      companyAddress: companyData.companyAddress,
+      businessNature: companyData.businessNature,
+      listOfOwners: companyData.listOfOwners,
+      IFSC: companyData.IFSC,
+      accountNumber: companyData.accountNumber,
+      UPINumber: companyData.UPINumber
     };
 
     res.status(200).json({ message: "Company data found", data });
@@ -489,6 +496,67 @@ const identificationDetails = async (req, res) => {
   }
 }
 
+//@PATCH
+//company/companies/:companyId/businessInformation
+// desc: To add details of business information
+
+const businessInformation = async (req, res) => {
+  const { companyId } = req.params;
+  const { companyName, registerNumber, companyAddress, businessNature, listOfOwners } = req.body;
+  try {
+    const company = await Company.findOne({ _id: companyId }).select("-password");
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+    if (company.role !== parseInt(process.env.COMPANY_ROLE)) {
+      return res.status(404).json({ message: 'Comapny not found with excepted role' });
+    }
+    company.companyName = companyName;
+    company.registerNumber = registerNumber;
+    company.companyAddress = companyAddress;
+    company.businessNature = businessNature;
+    company.listOfOwners = listOfOwners;
+    await company.save()
+    return res.status(200).json({ message: 'Business Information Updated Successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: `Internal server error due to: ${error.message}` });
+  }
+}
+
+//@PATCH
+//company/companies/:companyId/bankingInfo
+//desc: To add banking information
+
+const bankInfo = async (req, res) => {
+  const { companyId } = req.params;
+  const { IFSC, accountNumber, UPINumber } = req.body;
+  try {
+    const bankinfo = await Company.findOne({ _id: companyId }).select("-password")
+    if (!bankinfo) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+    if (bankinfo.role !== parseInt(process.env.COMPANY_ROLE)) {
+      return res.status(404).json({ message: 'Company not found with excepted role' });
+    }
+    bankinfo.IFSC = IFSC;
+    bankinfo.accountNumber = accountNumber;
+    bankinfo.UPINumber = UPINumber;
+    await bankinfo.save()
+    return res.status(200).json({ message: 'Banking Information Updated Successfully' });
+  }
+  catch (error) {
+    return res.status(500).json({ message: `Internal server error due to: ${error.message}` })
+  }
+}
+
+
+
+
+
+
+
+
+
 export {
   registerCompany,
   loginCompany,
@@ -503,5 +571,7 @@ export {
   getPersonalInfo,
   updateSocialLinks,
   identificationDetails,
-  getCompanyById
+  getCompanyById,
+  businessInformation,
+  bankInfo
 };

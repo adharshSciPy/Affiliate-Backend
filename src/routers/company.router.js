@@ -13,14 +13,16 @@ import {
   getPersonalInfo,
   updateSocialLinks,
   identificationDetails,
-  getCompanyById
+  getCompanyById,
+  businessInformation,
+  bankInfo
 } from "../controllers/company.controller.js";
 
 const companyRoute = Router();
 
 companyRoute.route("/register").post(registerCompany);
 companyRoute.route("/login").post(loginCompany);
-companyRoute.route("/refresh").get( refreshCompanyAccessToken);
+companyRoute.route("/refresh").get(refreshCompanyAccessToken);
 companyRoute.route("/logout").post(logoutCompany);
 companyRoute.route("/companies/:companyId").patch(companyMoreDetials);
 companyRoute.route("/companies/:companyId").delete(deleteCompany);
@@ -32,6 +34,8 @@ companyRoute.route('/companies/:companyId/manage-block').patch(manageCompanyBloc
 companyRoute.route('/companies/:companyId/get-personal').get(getPersonalInfo)
 companyRoute.route('/companies/:companyId/identification').patch(identificationDetails)
 companyRoute.route('/companies/:companyId/getcompanyById').get(getCompanyById)
+companyRoute.route('/companies/:companyId/businessinfo').patch(businessInformation)
+companyRoute.route('/companies/:companyId/bankInfo').patch(bankInfo)
 
 
 export default companyRoute;
