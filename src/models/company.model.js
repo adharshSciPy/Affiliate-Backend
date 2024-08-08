@@ -138,7 +138,10 @@ const companySchema = new Schema(
     UPINumber: {
       type: String
     },
-    uploads: {
+    addressProof: {
+      type: Array
+    },
+    businessLicense: {
       type: Array
     },
     socialLinks: [socialSchema],

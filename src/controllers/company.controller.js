@@ -555,18 +555,18 @@ const proofOfAddress = async (req, res) => {
   const { companyId } = req.params;
   const { files } = req.body;
   try {
-    const company = await User.findOne({ _id: companyId }).select(
+    const company = await Company.findOne({ _id: companyId }).select(
       "-password"
     );
     if (!company) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Company not found" });
     }
     if (company.role !== parseInt(process.env.COMPANY_ROLE)) {
-      return res.status(404).json({ message: "Affiliater not found" });
+      return res.status(404).json({ message: "Company with specific role not found" });
     }
 
     if (req.files && req.files.length > 0) {
-      company.uploads = req.files.map(file => file.path);
+      company.addressProof = req.files.map(file => file.path);
     }
 
     await company.save()
@@ -575,6 +575,31 @@ const proofOfAddress = async (req, res) => {
     return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
   }
 
+}
+
+//@PATCH
+//To upload file for Business License for a company
+
+const businessLicense = async (req, res) => {
+  const { companyId } = req.params;
+  const { files } = req.body;
+
+  try {
+    const company = await Company.findOne({ _id: companyId }).select("-password");
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+    if (company.role !== parseInt(process.env.COMPANY_ROLE)) {
+      return res.status(404).json({ message: "Company with specific role not found" });
+    }
+    if (req.files && req.files.length > 0) {
+      company.businessLicense = req.files.map(file => file.path)
+    }
+    await company.save()
+    return res.status(200).json({ message: "Business License updated successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: `Internal server error due to: ${err.message}` })
+  }
 }
 
 
@@ -601,5 +626,6 @@ export {
   getCompanyById,
   businessInformation,
   bankInfo,
-  proofOfAddress
+  proofOfAddress,
+  businessLicense
 };

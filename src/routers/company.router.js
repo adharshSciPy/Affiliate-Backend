@@ -16,7 +16,8 @@ import {
   getCompanyById,
   businessInformation,
   bankInfo,
-  proofOfAddress
+  proofOfAddress,
+  businessLicense
 } from "../controllers/company.controller.js";
 import upload from "../middlewares/uploads.js"
 
@@ -38,7 +39,8 @@ companyRoute.route('/companies/:companyId/identification').patch(identificationD
 companyRoute.route('/companies/:companyId/getcompanyById').get(getCompanyById)
 companyRoute.route('/companies/:companyId/businessinfo').patch(businessInformation)
 companyRoute.route('/companies/:companyId/bankInfo').patch(bankInfo)
-companyRoute.route('/companies/:companyId/proofOfAddress').patch(upload.array('uploads[]'), proofOfAddress)
+companyRoute.route('/companies/:companyId/proofOfAddress').patch(upload.array('addressProof[]'), proofOfAddress)
+companyRoute.route('/companies/:companyId/businessLicense').patch(upload.array('businessLicense[]'), businessLicense)
 
 
 export default companyRoute;
