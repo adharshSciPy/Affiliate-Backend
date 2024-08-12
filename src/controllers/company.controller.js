@@ -415,7 +415,9 @@ const getCompanyById = async (req, res) => {
       listOfOwners: companyData.listOfOwners,
       IFSC: companyData.IFSC,
       accountNumber: companyData.accountNumber,
-      UPINumber: companyData.UPINumber
+      UPINumber: companyData.UPINumber,
+      addressProof: companyData.addressProof,
+      businessLicense: companyData.businessLicense
     };
 
     res.status(200).json({ message: "Company data found", data });

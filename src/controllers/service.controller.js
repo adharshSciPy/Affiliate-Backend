@@ -6,15 +6,18 @@ import { Company } from "../models/company.model.js";
 // desc: Creating service with all level of access to the system
 const postService = async (req, res) => {
   const { companyId } = req.params;
+  console.log("companyId: ", companyId);
   const {
-    title,
-    description,
-    duration,
-    price,
-    discount,
     category,
-    tags,
-    mode,
+    image,
+    title,
+    courseDescription,
+    duration,
+    certificate,
+    courseFee,
+    offerFee,
+    addHeading,
+    description
   } = req.body;
   try {
     // sanitiasing inputs
@@ -22,14 +25,16 @@ const postService = async (req, res) => {
       return res.status(401).json({ message: "Company Id missing" });
     }
     const isEmptyFields = [
-      title,
-      description,
-      duration,
-      price,
-      discount,
       category,
-      tags,
-      mode,
+      image,
+      title,
+      courseDescription,
+      duration,
+      certificate,
+      courseFee,
+      offerFee,
+      addHeading,
+      description
     ].some((field) => field === "" || field === undefined);
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });
@@ -41,15 +46,16 @@ const postService = async (req, res) => {
       return res.status(404).json({ message: "Company not found" });
     }
     const service = await Service.create({
-      title,
-      description,
-      duration,
-      price,
-      discount,
       category,
-      tags,
-      mode,
-      companyId,
+      image,
+      title,
+      courseDescription,
+      duration,
+      certificate,
+      courseFee,
+      offerFee,
+      addHeading,
+      description
     });
     const createdService = await Service.findOne({ _id: service._id });
     if (!createdService) {
