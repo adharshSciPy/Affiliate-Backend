@@ -5,7 +5,7 @@ const serviceSchema = new Schema({
         type: String,
     },
     image: {
-        type: [String],
+        type: String,
     },
     title: {
         type: String,
@@ -36,9 +36,9 @@ const serviceSchema = new Schema({
     description: {
         type: String,
     },
-    tags: {
-        type: [String]
-    },
+    // tags: {
+    //     type: [String]
+    // },
     mode: {
         type: String
     },

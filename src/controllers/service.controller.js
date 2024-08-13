@@ -6,7 +6,7 @@ import { Company } from "../models/company.model.js";
 // desc: Creating service with all level of access to the system
 const postService = async (req, res) => {
   const { companyId } = req.params;
-  console.log("companyId: ", companyId);
+
   const {
     category,
     image,
@@ -17,8 +17,10 @@ const postService = async (req, res) => {
     courseFee,
     offerFee,
     addHeading,
-    description
+    description,
+    mode
   } = req.body;
+
   try {
     // sanitiasing inputs
     if (!companyId) {
@@ -34,14 +36,17 @@ const postService = async (req, res) => {
       courseFee,
       offerFee,
       addHeading,
-      description
+      description,
+      mode
     ].some((field) => field === "" || field === undefined);
+
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });
     }
 
     // Check if the company is valid
-    const company = await Company.findById(companyId);
+    const company = await Company.findById(companyId).select("-password");
+
     if (!company) {
       return res.status(404).json({ message: "Company not found" });
     }
@@ -55,9 +60,13 @@ const postService = async (req, res) => {
       courseFee,
       offerFee,
       addHeading,
-      description
+      description,
+      mode,
+      companyId: company._id
     });
+
     const createdService = await Service.findOne({ _id: service._id });
+
     if (!createdService) {
       return res.status(500).json({ message: "Service registration failed" });
     }
@@ -100,7 +109,7 @@ const deleteService = async (req, res) => {
 // service/detials
 // desc: Service detials api for serive
 const upadateServiceDetials = async (req, res) => {
-  const { title, description, duration, price, discount, category, tags } =
+  const { category, image, title, courseDescription, duration } =
     req.body;
   const { serviceId } = req.params;
   try {
@@ -114,7 +123,6 @@ const upadateServiceDetials = async (req, res) => {
     service.price = price;
     service.discount = discount;
     service.category = category;
-    service.tags = tags;
 
     await service.save();
 
@@ -148,7 +156,7 @@ const getAllServices = async (req, res) => {
 
     // Find services with pagination
     const services = await Service.find()
-      .select("title description duration price discount category tags mode")
+      .select("title description duration price discount category mode")
       .skip(skip)
       .limit(limitNumber);
 
@@ -170,4 +178,19 @@ const getAllServices = async (req, res) => {
   }
 };
 
-export { postService, deleteService, upadateServiceDetials, getAllServices };
+const serviceDetail = async (req, res) => {
+  const { serviceId } = req.params;
+  try {
+    const service = await Service.findOne({ _id: serviceId });
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+    return res.status(200).json({ message: "Service data found", data: service });
+
+  } catch (error) {
+    return res.status(500).json({ message: `Internal server error due to ${error.message}` });
+  }
+
+}
+
+export { postService, deleteService, upadateServiceDetials, getAllServices, serviceDetail };
