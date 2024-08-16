@@ -109,7 +109,7 @@ const deleteService = async (req, res) => {
 // service/detials
 // desc: Service detials api for serive
 const upadateServiceDetials = async (req, res) => {
-  const { category, image, title, courseDescription, duration } =
+  const { category, image, title, courseDescription, duration, certificate, courseFee, offerFee, addHeading, description, mode } =
     req.body;
   const { serviceId } = req.params;
   try {
@@ -117,12 +117,17 @@ const upadateServiceDetials = async (req, res) => {
     if (!service) {
       return res.status(404).json({ message: "Service doesn't exist" });
     }
-    service.title = title;
-    service.description = description;
-    service.duration = duration;
-    service.price = price;
-    service.discount = discount;
     service.category = category;
+    service.image = image;
+    service.title = title;
+    service.courseDescription = courseDescription;
+    service.duration = duration;
+    service.certificate = certificate;
+    service.courseFee = courseFee;
+    service.offerFee = offerFee;
+    service.addHeading = addHeading;
+    service.description = description;
+    service.mode = mode;
 
     await service.save();
 

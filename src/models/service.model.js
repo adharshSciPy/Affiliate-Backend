@@ -2,14 +2,14 @@ import mongoose, { Schema } from 'mongoose';
 
 const serviceSchema = new Schema({
     category: {
-        type: String,
+        type: String
     },
     image: {
         type: String,
     },
     title: {
         type: String,
-        required: [true, 'First Name is required']
+        required: [true, 'Title is required']
     },
     courseDescription: {
         type: String,
