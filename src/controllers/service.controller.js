@@ -21,6 +21,7 @@ const postService = async (req, res) => {
     mode
   } = req.body;
 
+
   try {
     // sanitiasing inputs
     if (!companyId) {
@@ -28,7 +29,6 @@ const postService = async (req, res) => {
     }
     const isEmptyFields = [
       category,
-      image,
       title,
       courseDescription,
       duration,
@@ -39,6 +39,7 @@ const postService = async (req, res) => {
       description,
       mode
     ].some((field) => field === "" || field === undefined);
+
 
     if (isEmptyFields) {
       return res.status(401).json({ message: "All fields are required" });
@@ -64,6 +65,12 @@ const postService = async (req, res) => {
       mode,
       companyId: company._id
     });
+
+    if (req.file) {
+      service.image = req.file.path
+    }
+
+    await service.save();
 
     const createdService = await Service.findOne({ _id: service._id });
 
@@ -196,6 +203,6 @@ const serviceDetail = async (req, res) => {
     return res.status(500).json({ message: `Internal server error due to ${error.message}` });
   }
 
-}
+};
 
 export { postService, deleteService, upadateServiceDetials, getAllServices, serviceDetail };
