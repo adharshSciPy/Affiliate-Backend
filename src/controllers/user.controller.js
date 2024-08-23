@@ -3,6 +3,7 @@ import { Company } from "../models/company.model.js";
 import { Admin } from "../models/admin.model.js";
 
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 import { passwordValidator } from "../utils/passwordValidator.js";
 
 // @POST
@@ -91,6 +92,10 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ message: "Email doesn't exist" });
     }
 
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
     // Verify password
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect) {
@@ -211,6 +216,7 @@ const getUserById = async (req, res) => {
       firstName: userData.firstName,
       lastName: userData.lastName,
       email: userData.email,
+      password: userData.password,
       role: userData.role,
       officialId: userData.officialId,
       phoneNumber: userData.phoneNumber,
@@ -680,7 +686,7 @@ const identificationDocument = async (req, res) => {
     if (affiliater.role !== parseInt(process.env.AFFILIATER_ROLE)) {
       return res.status(404).json({ message: "Affiliater not found" });
     }
-    
+
     if (req.files && req.files.length > 0) {
       affiliater.uploads = req.files.map(file => file.path);
     }
@@ -692,6 +698,37 @@ const identificationDocument = async (req, res) => {
   }
 
 }
+
+//PATCH
+//Reset password
+const resetPassword = async (req, res) => {
+  const { userId } = req.params;
+  const { oldpassword, newPassword } = req.body;
+  console.log('old password: ' + oldpassword + ' new password: ' + newPassword);
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    console.log('userpasswordd', user.password)
+    const isMatch = await bcrypt.compare(oldpassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Incorrect old password" });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    console.log(`Old Hashed Password: ${user.password}`);
+    console.log(`New Hashed Password: ${hashedPassword}`);
+
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(200).json({ message: "Password reset successfully" });
+  }
+  catch (err) {
+    return res.status(500).json({ message: `Internal server error due to: ${err.message}` });
+  }
+}
+
 
 
 
@@ -711,5 +748,6 @@ export {
   affiliaterDomestic,
   affiliaterInternational,
   proofOfAddress,
-  identificationDocument
+  identificationDocument,
+  resetPassword
 };

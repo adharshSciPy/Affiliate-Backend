@@ -111,6 +111,12 @@ const userSchema = new Schema(
     },
     uploads: {
       type: Array,
+    },
+    oldPassword: {
+      type: String
+    },
+    newPassword: {
+      type: String
     }
   },
   { timestamps: true }

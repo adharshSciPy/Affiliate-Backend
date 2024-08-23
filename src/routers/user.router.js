@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { registerUser, loginUser, refreshAccessToken, logoutUser, getAllCustomers, getAllVerifiedAffiliaters, getAllNonVerifiedAffiliaters, verifyAffiliater, manageUsersBlock, getUserById, updateSocialLinks, affiliaterMoreDetials, affiliaterDomestic, affiliaterInternational, proofOfAddress, identificationDocument } from "../controllers/user.controller.js"
+import { registerUser, loginUser, refreshAccessToken, logoutUser, getAllCustomers, getAllVerifiedAffiliaters, getAllNonVerifiedAffiliaters, verifyAffiliater, manageUsersBlock, getUserById, updateSocialLinks, affiliaterMoreDetials, affiliaterDomestic, affiliaterInternational, proofOfAddress, identificationDocument, resetPassword } from "../controllers/user.controller.js"
 import upload from "../middlewares/uploads.js"
 
 const userRoute = Router()
@@ -20,6 +20,7 @@ userRoute.route('/users/:userId').get(getUserById)
 userRoute.route('/users/:userId/social-links').patch(updateSocialLinks)
 userRoute.route('/affiliaters/:affiliaterId/bank-info-domestic').patch(affiliaterDomestic)
 userRoute.route('/affiliaters/:affiliaterId/bank-info-international').patch(affiliaterInternational)
+userRoute.route('/users/:userId/reset-password').patch(resetPassword)
 
 
 export default userRoute
