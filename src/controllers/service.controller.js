@@ -116,8 +116,7 @@ const deleteService = async (req, res) => {
 // service/detials
 // desc: Service detials api for serive
 const upadateServiceDetials = async (req, res) => {
-  const { category, image, title, courseDescription, duration, certificate, courseFee, offerFee, addHeading, description, mode } =
-    req.body;
+  const { category, image, title, courseDescription, duration, certificate, courseFee, offerFee, addHeading, description, mode } = req.body;
   const { serviceId } = req.params;
   try {
     const service = await Service.findOne({ _id: serviceId });
@@ -135,6 +134,10 @@ const upadateServiceDetials = async (req, res) => {
     service.addHeading = addHeading;
     service.description = description;
     service.mode = mode;
+
+    if (req.file) {
+      service.image = req.file.path
+    }
 
     await service.save();
 
